@@ -56,6 +56,7 @@ export default function QuestionDetail() {
     );
 
   const selected = submissions.find((s) => s.id === selectedId);
+  const showSubmissionSelector = submissions.length > 1;
 
   return (
     <main className="container mx-auto flex-1 px-4 py-10 sm:py-12">
@@ -102,101 +103,99 @@ export default function QuestionDetail() {
           )}
         </div>
 
-        <aside className="w-full shrink-0 lg:sticky lg:top-20 lg:w-80">
-          <div className="flex flex-col gap-4">
-            <section className="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
-              <div className="mb-3 flex items-center justify-between gap-3">
-                <h2 className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                  Submissions
-                </h2>
-                <span className="text-sm font-bold text-gray-900 dark:text-gray-100">
-                  {submissions.length}
-                </span>
-              </div>
+        {(showSubmissionSelector || selected) && (
+          <aside className="w-full shrink-0 lg:sticky lg:top-20 lg:w-80">
+            <div className="flex flex-col gap-4">
+              {showSubmissionSelector && (
+                <section className="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
+                  <div className="mb-3 flex items-center justify-between gap-3">
+                    <h2 className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                      Submissions
+                    </h2>
+                    <span className="text-sm font-bold text-gray-900 dark:text-gray-100">
+                      {submissions.length}
+                    </span>
+                  </div>
 
-              {submissions.length === 0 ? (
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  No submissions yet.
-                </p>
-              ) : (
-                <div className="flex flex-col gap-2">
-                  {submissions.map((sub) => {
-                    const canView = !!sub.pdfUrl;
-                    const isSelected = sub.id === selectedId;
-                    return (
-                      <button
-                        key={sub.id}
-                        type="button"
-                        disabled={!canView}
-                        onClick={() => canView && setSelectedId(sub.id)}
-                        className={cx(
-                          "w-full rounded-lg border p-3 text-left transition",
-                          canView
-                            ? "cursor-pointer hover:border-blue-300"
-                            : "cursor-not-allowed opacity-50",
-                          isSelected
-                            ? "border-blue-500 bg-blue-50 ring-1 ring-blue-500 dark:bg-blue-500/10"
-                            : "border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-950"
-                        )}
-                      >
-                        <p className="truncate text-sm font-semibold text-gray-900 dark:text-gray-100">
-                          {sub.contributor?.name ?? "Anonymous"}
-                        </p>
-                        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                          {formatDate(sub.createdAt)}
-                        </p>
-                      </button>
-                    );
-                  })}
-                </div>
+                  <div className="flex flex-col gap-2">
+                    {submissions.map((sub) => {
+                      const canView = !!sub.pdfUrl;
+                      const isSelected = sub.id === selectedId;
+                      return (
+                        <button
+                          key={sub.id}
+                          type="button"
+                          disabled={!canView}
+                          onClick={() => canView && setSelectedId(sub.id)}
+                          className={cx(
+                            "w-full rounded-lg border p-3 text-left transition",
+                            canView
+                              ? "cursor-pointer hover:border-blue-300"
+                              : "cursor-not-allowed opacity-50",
+                            isSelected
+                              ? "border-blue-500 bg-blue-50 ring-1 ring-blue-500 dark:bg-blue-500/10"
+                              : "border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-950"
+                          )}
+                        >
+                          <p className="truncate text-sm font-semibold text-gray-900 dark:text-gray-100">
+                            {sub.contributor?.name ?? "Anonymous"}
+                          </p>
+                          <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                            {formatDate(sub.createdAt)}
+                          </p>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </section>
               )}
-            </section>
 
-            {selected && (
-              <section className="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
-                <h3 className="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                  Contributor
-                </h3>
-                <div className="mb-4 flex items-center gap-3">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-700 dark:bg-blue-500/20 dark:text-blue-300">
-                    {selected.contributor?.name?.[0]?.toUpperCase() ?? "?"}
-                  </div>
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-gray-900 dark:text-gray-100">
-                      {selected.contributor?.name ?? "Anonymous"}
-                    </p>
-                    {selected.contributor?.username && (
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        @{selected.contributor.username}
+              {selected && (
+                <section className="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
+                  <h3 className="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                    Contributor
+                  </h3>
+                  <div className="mb-4 flex items-center gap-3">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-700 dark:bg-blue-500/20 dark:text-blue-300">
+                      {selected.contributor?.name?.[0]?.toUpperCase() ?? "?"}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-semibold text-gray-900 dark:text-gray-100">
+                        {selected.contributor?.name ?? "Anonymous"}
                       </p>
-                    )}
+                      {selected.contributor?.username && (
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          @{selected.contributor.username}
+                        </p>
+                      )}
+                    </div>
                   </div>
-                </div>
 
-                <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                  Details
-                </h3>
-                <dl className="space-y-1.5 text-sm">
-                  <Row label="Date" value={formatDate(selected.createdAt)} />
-                  <Row label="File size" value={formatBytes(selected.fileSize)} />
-                  {selected.section && <Row label="Section" value={selected.section} />}
-                  {selected.batch && <Row label="Batch" value={selected.batch} />}
-                </dl>
+                  <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                    Details
+                  </h3>
+                  <dl className="space-y-1.5 text-sm">
+                    <Row label="Date" value={formatDate(selected.createdAt)} />
+                    <Row label="File size" value={formatBytes(selected.fileSize)} />
+                    {selected.section && <Row label="Section" value={selected.section} />}
+                    {selected.batch && <Row label="Batch" value={selected.batch} />}
+                  </dl>
 
-                {selected.pdfUrl && (
-                  <a
-                    href={selected.pdfUrl}
-                    target="_blank"
-                    rel="noreferrer noopener"
-                    className="mt-4 flex w-full items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700"
-                  >
-                    Open in new tab
-                  </a>
-                )}
-              </section>
-            )}
-          </div>
-        </aside>
+                  {selected.pdfUrl && (
+                    <a
+                      href={selected.pdfUrl}
+                      target="_blank"
+                      rel="noreferrer noopener"
+                      className="mt-4 flex w-full items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700"
+                    >
+                      Open in new tab
+                    </a>
+                  )}
+                </section>
+              )}
+            </div>
+          </aside>
+        )}
       </div>
     </main>
   );
