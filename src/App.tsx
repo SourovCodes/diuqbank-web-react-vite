@@ -10,6 +10,7 @@ import {
 import Home from "./pages/Home";
 import QuestionList from "./pages/QuestionList";
 import QuestionDetail from "./pages/QuestionDetail";
+import NotFound from "./pages/NotFound";
 
 type NavLinkItem = {
   label: string;
@@ -138,6 +139,7 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/questions" element={<QuestionList />} />
         <Route path="/questions/:id" element={<QuestionDetail />} />
+        <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>
   );

@@ -1,6 +1,11 @@
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 
 export default function Home() {
+  useEffect(() => {
+    document.title = "DIUQBank";
+  }, []);
+
   return (
     <main className="container mx-auto flex flex-1 flex-col items-center px-4 py-20 text-center sm:py-28">
       <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-blue-600 dark:text-blue-400">

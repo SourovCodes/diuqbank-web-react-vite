@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useQuestion, useSubmissions } from "../hooks/queries";
 import { Badge } from "../components/ui/Badge";
+import { StatusPage } from "../components/ui/StatusPage";
 import { cx } from "../lib/cx";
 import { formatBytes, formatDate } from "../lib/format";
 
@@ -26,10 +27,12 @@ export default function QuestionDetail() {
   }, [submissions]);
 
   useEffect(() => {
-    document.title = question?.title
-      ? `${question.title} | DIUQBank`
-      : "Question | DIUQBank";
-  }, [question?.title]);
+    document.title = isError
+      ? "Question Not Found | DIUQBank"
+      : question?.title
+        ? `${question.title} | DIUQBank`
+        : "Question | DIUQBank";
+  }, [isError, question?.title]);
 
   if (isPending)
     return (
@@ -42,17 +45,15 @@ export default function QuestionDetail() {
 
   if (isError || !question)
     return (
-      <div className="container mx-auto flex-1 px-4 py-12">
-        <p className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">
-          Question not found or failed to load.
-        </p>
-        <Link
-          to="/questions"
-          className="mt-4 inline-block text-sm font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400"
-        >
-          Back to questions
-        </Link>
-      </div>
+      <StatusPage
+        eyebrow="Question unavailable"
+        title="Question not found"
+        description="This question may have been removed, unpublished, or the link may be incorrect."
+        actions={[
+          { label: "Browse Questions", to: "/questions" },
+          { label: "Go Home", to: "/", variant: "secondary" },
+        ]}
+      />
     );
 
   const selected = submissions.find((s) => s.id === selectedId);
