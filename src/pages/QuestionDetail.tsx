@@ -68,7 +68,7 @@ export default function QuestionDetail() {
 
       <div className="mb-7 flex flex-col gap-4 border-b border-gray-200 pb-6 dark:border-gray-800">
         <h1 className="max-w-4xl text-2xl font-bold leading-tight tracking-tight text-gray-900 dark:text-gray-100 sm:text-3xl">
-          {question.course.name}
+          {question.title}
         </h1>
         <div className="flex flex-wrap gap-2">
           <Badge label={question.department.name} variant="blue" />

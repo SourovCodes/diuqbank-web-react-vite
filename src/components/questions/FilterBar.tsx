@@ -15,6 +15,19 @@ type FilterBarProps = {
   disabled?: boolean;
 };
 
+function withInvalidOption(
+  options: SelectOption[],
+  value: string,
+  invalidLabel: string,
+  optionsLoaded: boolean
+) {
+  if (!optionsLoaded || !value || options.some((o) => o.value === value)) {
+    return options;
+  }
+
+  return [{ value, label: invalidLabel }, ...options];
+}
+
 export function FilterBar({
   options,
   filters,
@@ -27,33 +40,42 @@ export function FilterBar({
   const courses = options?.courses ?? [];
   const semesters = options?.semesters ?? [];
   const examTypes = options?.examTypes ?? [];
+  const optionsLoaded = !!options;
 
   const visibleCourses = filters.departmentId
     ? courses.filter((c) => c.departmentId === Number(filters.departmentId))
     : courses;
 
   const deptShort = new Map(departments.map((d) => [d.id, d.shortName]));
-  const courseOptions: SelectOption[] = visibleCourses.map((c) => ({
-    value: String(c.id),
-    label: filters.departmentId
-      ? c.name
-      : `${c.name} (${deptShort.get(c.departmentId) ?? "?"})`,
-  }));
-  const semesterOptions: SelectOption[] = semesters.map((s) => ({
-    value: String(s.id),
-    label: s.name,
-  }));
-  const hasInvalidSemester =
-    !!options &&
-    !!filters.semesterId &&
-    !semesterOptions.some((s) => s.value === filters.semesterId);
-
-  if (hasInvalidSemester) {
-    semesterOptions.unshift({
-      value: filters.semesterId,
-      label: "Invalid semester",
-    });
-  }
+  const departmentOptions = withInvalidOption(
+    departments.map((d) => ({ value: String(d.id), label: d.name })),
+    filters.departmentId,
+    "Invalid department",
+    optionsLoaded
+  );
+  const courseOptions = withInvalidOption(
+    visibleCourses.map((c) => ({
+      value: String(c.id),
+      label: filters.departmentId
+        ? c.name
+        : `${c.name} (${deptShort.get(c.departmentId) ?? "?"})`,
+    })),
+    filters.courseId,
+    "Invalid course",
+    optionsLoaded
+  );
+  const semesterOptions = withInvalidOption(
+    semesters.map((s) => ({ value: String(s.id), label: s.name })),
+    filters.semesterId,
+    "Invalid semester",
+    optionsLoaded
+  );
+  const examTypeOptions = withInvalidOption(
+    examTypes.map((e) => ({ value: String(e.id), label: e.name })),
+    filters.examTypeId,
+    "Invalid exam type",
+    optionsLoaded
+  );
 
   const hasFilters = !!(
     filters.departmentId ||
@@ -68,7 +90,7 @@ export function FilterBar({
         <div>
           <label className={labelClass}>Department</label>
           <SearchableSelect
-            options={departments.map((d) => ({ value: String(d.id), label: d.name }))}
+            options={departmentOptions}
             value={filters.departmentId}
             onChange={onDepartmentChange}
             placeholder="All departments"
@@ -98,7 +120,7 @@ export function FilterBar({
         <div>
           <label className={labelClass}>Exam Type</label>
           <SearchableSelect
-            options={examTypes.map((e) => ({ value: String(e.id), label: e.name }))}
+            options={examTypeOptions}
             value={filters.examTypeId}
             onChange={(v) => onFilterChange("examTypeId", v)}
             placeholder="All types"
