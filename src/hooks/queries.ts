@@ -5,12 +5,22 @@ import {
   type QueryClient,
 } from "@tanstack/react-query";
 import {
+  getContributor,
+  getContributors,
+  getContributorSubmissions,
   getFilterOptions,
   getQuestions,
   getQuestion,
   getSubmissions,
 } from "../api";
-import type { QuestionDetail, QuestionFilters, QuestionList } from "../types/api";
+import type {
+  Contributor,
+  ContributorList,
+  PaginationParams,
+  QuestionDetail,
+  QuestionFilters,
+  QuestionList,
+} from "../types/api";
 
 function findCachedQuestion(
   queryClient: QueryClient,
@@ -26,6 +36,24 @@ function findCachedQuestion(
   for (const [, list] of cachedLists) {
     const question = list?.data.find((item) => item.id === questionId);
     if (question) return question;
+  }
+
+  return undefined;
+}
+
+function findCachedContributor(
+  queryClient: QueryClient,
+  username?: string
+): Contributor | undefined {
+  if (!username) return undefined;
+
+  const cachedLists = queryClient.getQueriesData<ContributorList>({
+    queryKey: ["contributors"],
+  });
+
+  for (const [, list] of cachedLists) {
+    const contributor = list?.data.find((item) => item.username === username);
+    if (contributor) return contributor;
   }
 
   return undefined;
@@ -69,5 +97,40 @@ export function useSubmissions(id?: string) {
     queryKey: ["submissions", id],
     queryFn: () => getSubmissions(id as string),
     enabled: !!id,
+  });
+}
+
+export function useContributors(params: PaginationParams) {
+  return useQuery({
+    queryKey: ["contributors", params],
+    queryFn: () => getContributors(params),
+    placeholderData: keepPreviousData,
+  });
+}
+
+export function useContributor(username?: string, initialContributor?: Contributor) {
+  const queryClient = useQueryClient();
+  const hydratedContributor =
+    initialContributor?.username === username
+      ? initialContributor
+      : findCachedContributor(queryClient, username);
+
+  return useQuery({
+    queryKey: ["contributor", username],
+    queryFn: () => getContributor(username as string),
+    enabled: !!username && !hydratedContributor,
+    initialData: hydratedContributor,
+  });
+}
+
+export function useContributorSubmissions(
+  username: string | undefined,
+  params: PaginationParams
+) {
+  return useQuery({
+    queryKey: ["contributor-submissions", username, params],
+    queryFn: () => getContributorSubmissions(username as string, params),
+    enabled: !!username,
+    placeholderData: keepPreviousData,
   });
 }

@@ -10,6 +10,8 @@ import {
 import Home from "./pages/Home";
 import QuestionList from "./pages/QuestionList";
 import QuestionDetail from "./pages/QuestionDetail";
+import ContributorList from "./pages/ContributorList";
+import ContributorDetail from "./pages/ContributorDetail";
 import NotFound from "./pages/NotFound";
 
 type NavLinkItem = {
@@ -20,6 +22,7 @@ type NavLinkItem = {
 const navLinks: NavLinkItem[] = [
   { label: "Home", to: "/" },
   { label: "Questions", to: "/questions" },
+  { label: "Contributors", to: "/contributors" },
 ];
 
 function Navbar() {
@@ -139,6 +142,8 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/questions" element={<QuestionList />} />
         <Route path="/questions/:id" element={<QuestionDetail />} />
+        <Route path="/contributors" element={<ContributorList />} />
+        <Route path="/contributors/:username" element={<ContributorDetail />} />
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>

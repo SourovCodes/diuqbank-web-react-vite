@@ -69,6 +69,9 @@ export default function QuestionDetail() {
     );
 
   const selected = submissions.find((s) => s.id === selectedId);
+  const selectedContributorPath = selected?.contributor?.username
+    ? `/contributors/${encodeURIComponent(selected.contributor.username)}`
+    : null;
   const showSubmissionSelector = !isSubmissionsPending && submissions.length > 1;
   const showSubmissionSidebar =
     isSubmissionsPending || showSubmissionSelector || selected;
@@ -192,21 +195,12 @@ export default function QuestionDetail() {
                   <h3 className="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
                     Contributor
                   </h3>
-                  <div className="mb-4 flex items-center gap-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-700 dark:bg-blue-500/20 dark:text-blue-300">
-                      {selected.contributor?.name?.[0]?.toUpperCase() ?? "?"}
-                    </div>
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-semibold text-gray-900 dark:text-gray-100">
-                        {selected.contributor?.name ?? "Anonymous"}
-                      </p>
-                      {selected.contributor?.username && (
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                          @{selected.contributor.username}
-                        </p>
-                      )}
-                    </div>
-                  </div>
+                  <ContributorIdentity
+                    name={selected.contributor?.name ?? "Anonymous"}
+                    username={selected.contributor?.username}
+                    image={selected.contributor?.image}
+                    to={selectedContributorPath}
+                  />
 
                   <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
                     Details
@@ -236,6 +230,59 @@ export default function QuestionDetail() {
       </div>
     </main>
   );
+}
+
+type ContributorIdentityProps = {
+  name: string;
+  username?: string;
+  image?: string | null;
+  to: string | null;
+};
+
+function ContributorIdentity({
+  name,
+  username,
+  image,
+  to,
+}: ContributorIdentityProps) {
+  const content = (
+    <>
+      {image ? (
+        <img
+          src={image}
+          alt=""
+          className="h-10 w-10 shrink-0 rounded-full object-cover"
+        />
+      ) : (
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-700 dark:bg-blue-500/20 dark:text-blue-300">
+          {name[0]?.toUpperCase() ?? "?"}
+        </div>
+      )}
+      <div className="min-w-0">
+        <p className="truncate text-sm font-semibold text-gray-900 dark:text-gray-100">
+          {name}
+        </p>
+        {username && (
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            @{username}
+          </p>
+        )}
+      </div>
+    </>
+  );
+
+  if (to) {
+    return (
+      <Link
+        to={to}
+        className="mb-4 flex items-center gap-3 rounded-lg transition hover:text-blue-700 dark:hover:text-blue-400"
+      >
+        {content}
+      </Link>
+    );
+  }
+
+  return <div className="mb-4 flex items-center gap-3">{content}</div>;
 }
 
 type RowProps = {

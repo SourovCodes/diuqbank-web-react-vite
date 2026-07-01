@@ -7,6 +7,12 @@ export type QuestionList = components["schemas"]["QuestionList"];
 export type QuestionDetail = components["schemas"]["QuestionDetail"];
 export type QuestionSubmissions = components["schemas"]["QuestionSubmissions"];
 export type PublicSubmission = components["schemas"]["PublicSubmission"];
+export type Contributor = components["schemas"]["Contributor"];
+export type ContributorList = components["schemas"]["ContributorList"];
+export type ContributorSubmission =
+  components["schemas"]["ContributorSubmission"];
+export type ContributorSubmissionList =
+  components["schemas"]["ContributorSubmissionList"];
 
 export type QuestionFilters = {
   page: number;
@@ -20,4 +26,9 @@ export type QuestionFilters = {
 export type SelectOption = {
   value: string;
   label: string;
+};
+
+export type PaginationParams = {
+  page: number;
+  perPage: number;
 };

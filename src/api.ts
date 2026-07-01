@@ -1,5 +1,9 @@
 import type {
+  Contributor,
+  ContributorList,
+  ContributorSubmissionList,
   FilterOptions,
+  PaginationParams,
   QuestionDetail,
   QuestionFilters,
   QuestionList,
@@ -33,3 +37,16 @@ export const getSubmissions = (id: string): Promise<QuestionSubmissions> =>
 
 export const getFilterOptions = (): Promise<FilterOptions> =>
   get("/filter-options");
+
+export const getContributors = (
+  params: PaginationParams
+): Promise<ContributorList> => get("/contributors", params);
+
+export const getContributor = (username: string): Promise<Contributor> =>
+  get(`/contributors/${encodeURIComponent(username)}`);
+
+export const getContributorSubmissions = (
+  username: string,
+  params: PaginationParams
+): Promise<ContributorSubmissionList> =>
+  get(`/contributors/${encodeURIComponent(username)}/submissions`, params);
