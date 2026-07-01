@@ -10,6 +10,7 @@ export function QuestionCard({ question }: QuestionCardProps) {
   return (
     <Link
       to={`/questions/${question.id}`}
+      state={{ question }}
       className="group grid gap-4 rounded-lg border border-gray-200 bg-white p-4 transition hover:border-blue-300 hover:bg-blue-50/40 dark:border-gray-800 dark:bg-gray-900 dark:hover:border-blue-500 dark:hover:bg-blue-500/5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center"
     >
       <div className="min-w-0">

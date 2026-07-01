@@ -1,14 +1,22 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { useQuestion, useSubmissions } from "../hooks/queries";
 import { Badge } from "../components/ui/Badge";
 import { StatusPage } from "../components/ui/StatusPage";
 import { cx } from "../lib/cx";
 import { formatBytes, formatDate } from "../lib/format";
+import type { QuestionDetail as QuestionDetailData } from "../types/api";
+
+type QuestionDetailLocationState = {
+  question?: QuestionDetailData;
+};
 
 export default function QuestionDetail() {
   const { id } = useParams();
-  const { data: question, isPending, isError } = useQuestion(id);
+  const location = useLocation();
+  const initialQuestion = (location.state as QuestionDetailLocationState | null)
+    ?.question;
+  const { data: question, isPending, isError } = useQuestion(id, initialQuestion);
   const { data: submissionsData } = useSubmissions(id);
 
   const submissions = useMemo(
