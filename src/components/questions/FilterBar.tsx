@@ -50,7 +50,7 @@ export function FilterBar({
   const departmentOptions = withInvalidOption(
     departments.map((d) => ({ value: String(d.id), label: d.name })),
     filters.departmentId,
-    "Invalid department",
+    "Invalid Department",
     optionsLoaded
   );
   const courseOptions = withInvalidOption(
@@ -61,19 +61,19 @@ export function FilterBar({
         : `${c.name} (${deptShort.get(c.departmentId) ?? "?"})`,
     })),
     filters.courseId,
-    "Invalid course",
+    "Invalid Course",
     optionsLoaded
   );
   const semesterOptions = withInvalidOption(
     semesters.map((s) => ({ value: String(s.id), label: s.name })),
     filters.semesterId,
-    "Invalid semester",
+    "Invalid Semester",
     optionsLoaded
   );
   const examTypeOptions = withInvalidOption(
     examTypes.map((e) => ({ value: String(e.id), label: e.name })),
     filters.examTypeId,
-    "Invalid exam type",
+    "Invalid Exam Type",
     optionsLoaded
   );
 
