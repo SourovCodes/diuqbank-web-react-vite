@@ -5,6 +5,7 @@ import { FilterBar } from "../components/questions/FilterBar";
 import { QuestionCard } from "../components/questions/QuestionCard";
 import { Pagination } from "../components/ui/Pagination";
 import { cx } from "../lib/cx";
+import { parsePositiveIntParam } from "../lib/searchParams";
 import type { QuestionFilters } from "../types/api";
 
 type FilterKey = Exclude<keyof QuestionFilters, "page" | "perPage">;
@@ -13,7 +14,7 @@ export default function QuestionList() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const filters: QuestionFilters = {
-    page: Number(searchParams.get("page")) || 1,
+    page: parsePositiveIntParam(searchParams, "page"),
     perPage: 20,
     departmentId: searchParams.get("departmentId") ?? "",
     courseId: searchParams.get("courseId") ?? "",

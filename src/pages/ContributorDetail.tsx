@@ -9,6 +9,7 @@ import { Pagination } from "../components/ui/Pagination";
 import { StatusPage } from "../components/ui/StatusPage";
 import { cx } from "../lib/cx";
 import { formatBytes, formatDate } from "../lib/format";
+import { parsePositiveIntParam } from "../lib/searchParams";
 import type {
   Contributor,
   ContributorSubmission,
@@ -22,7 +23,7 @@ export default function ContributorDetail() {
   const { username } = useParams();
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
-  const page = Number(searchParams.get("page")) || 1;
+  const page = parsePositiveIntParam(searchParams, "page");
   const initialContributor = (
     location.state as ContributorDetailLocationState | null
   )?.contributor;

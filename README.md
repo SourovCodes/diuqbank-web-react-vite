@@ -1,16 +1,63 @@
-# React + Vite
+# DIUQBank Web
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+React/Vite frontend for the public DIU QuestionBank archive. The app is built as static assets and deployed with Cloudflare Wrangler.
 
-Currently, two official plugins are available:
+## Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- React 19
+- React Router 7
+- TanStack Query 5
+- Tailwind CSS 4
+- Vite 8
+- Wrangler static assets
 
-## React Compiler
+## API
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Generated API types live in `src/types/openapi.ts` and are sourced from:
 
-## Expanding the Oxlint configuration
+```sh
+https://diuqbank-api-prod.sourov-cse.workers.dev/openapi.json
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+Local development uses a same-origin `/api` path by default. Vite proxies that path to the production API so local requests do not depend on browser CORS behavior.
+
+Optional environment variables:
+
+```sh
+VITE_API_BASE_URL=/api
+VITE_DEV_API_PROXY_TARGET=https://diuqbank-api-prod.sourov-cse.workers.dev
+```
+
+For a production build that should call a different API origin, set `VITE_API_BASE_URL` before running `npm run build`.
+
+## Development
+
+```sh
+npm install
+npm run dev
+```
+
+The dev server is pinned to port `5173` with `strictPort` enabled.
+
+## Verification
+
+```sh
+npm run lint
+npm run typecheck
+npm run build
+npm run deploy:dry-run
+```
+
+Refresh generated OpenAPI types after backend contract changes:
+
+```sh
+npm run api:types
+```
+
+## Deploy
+
+```sh
+npm run deploy
+```
+
+Wrangler serves `dist` as static assets and uses SPA fallback handling for deep links such as `/questions/71`.

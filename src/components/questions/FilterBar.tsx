@@ -88,8 +88,12 @@ export function FilterBar({
     <section className="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <div>
-          <label className={labelClass}>Department</label>
+          <span id="department-filter-label" className={labelClass}>
+            Department
+          </span>
           <SearchableSelect
+            id="department-filter"
+            label="Department"
             options={departmentOptions}
             value={filters.departmentId}
             onChange={onDepartmentChange}
@@ -98,8 +102,12 @@ export function FilterBar({
           />
         </div>
         <div>
-          <label className={labelClass}>Course</label>
+          <span id="course-filter-label" className={labelClass}>
+            Course
+          </span>
           <SearchableSelect
+            id="course-filter"
+            label="Course"
             options={courseOptions}
             value={filters.courseId}
             onChange={(v) => onFilterChange("courseId", v)}
@@ -108,8 +116,12 @@ export function FilterBar({
           />
         </div>
         <div>
-          <label className={labelClass}>Semester</label>
+          <span id="semester-filter-label" className={labelClass}>
+            Semester
+          </span>
           <SearchableSelect
+            id="semester-filter"
+            label="Semester"
             options={semesterOptions}
             value={filters.semesterId}
             onChange={(v) => onFilterChange("semesterId", v)}
@@ -118,8 +130,12 @@ export function FilterBar({
           />
         </div>
         <div>
-          <label className={labelClass}>Exam Type</label>
+          <span id="exam-type-filter-label" className={labelClass}>
+            Exam Type
+          </span>
           <SearchableSelect
+            id="exam-type-filter"
+            label="Exam Type"
             options={examTypeOptions}
             value={filters.examTypeId}
             onChange={(v) => onFilterChange("examTypeId", v)}

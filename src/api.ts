@@ -10,20 +10,35 @@ import type {
   QuestionSubmissions,
 } from "./types/api";
 
-const API_BASE = "https://diuqbank-api-prod.sourov-cse.workers.dev";
+const PRODUCTION_API_BASE = "https://diuqbank-api-prod.sourov-cse.workers.dev";
+const configuredApiBase = import.meta.env.VITE_API_BASE_URL?.trim();
+const API_BASE = (configuredApiBase || (import.meta.env.DEV ? "/api" : PRODUCTION_API_BASE))
+  .replace(/\/+$/, "");
 
 type QueryParams = Record<string, string | number | boolean | null | undefined>;
 
 async function get<T>(path: string, params?: QueryParams): Promise<T> {
-  const url = new URL(API_BASE + path);
+  const url = new URL(`${API_BASE}${path}`, window.location.origin);
   for (const [k, v] of Object.entries(params || {})) {
     if (v !== undefined && v !== null && v !== "") {
       url.searchParams.set(k, String(v));
     }
   }
   const res = await fetch(url);
-  if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+  if (!res.ok) {
+    const message = await readErrorMessage(res);
+    throw new Error(message || `${res.status} ${res.statusText}`);
+  }
   return res.json() as Promise<T>;
+}
+
+async function readErrorMessage(res: Response): Promise<string | null> {
+  try {
+    const body = (await res.json()) as { error?: string; message?: string };
+    return body.error || body.message || null;
+  } catch {
+    return null;
+  }
 }
 
 export const getQuestions = (params: QuestionFilters): Promise<QuestionList> =>

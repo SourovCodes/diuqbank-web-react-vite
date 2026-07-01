@@ -87,8 +87,9 @@ export function useQuestion(id?: string, initialQuestion?: QuestionDetail) {
   return useQuery({
     queryKey: ["question", id],
     queryFn: () => getQuestion(id as string),
-    enabled: !!id && !hydratedQuestion,
+    enabled: !!id,
     initialData: hydratedQuestion,
+    initialDataUpdatedAt: hydratedQuestion ? 0 : undefined,
   });
 }
 
@@ -118,8 +119,9 @@ export function useContributor(username?: string, initialContributor?: Contribut
   return useQuery({
     queryKey: ["contributor", username],
     queryFn: () => getContributor(username as string),
-    enabled: !!username && !hydratedContributor,
+    enabled: !!username,
     initialData: hydratedContributor,
+    initialDataUpdatedAt: hydratedContributor ? 0 : undefined,
   });
 }
 

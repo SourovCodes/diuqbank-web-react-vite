@@ -4,11 +4,12 @@ import { useContributors } from "../hooks/queries";
 import { Pagination } from "../components/ui/Pagination";
 import { cx } from "../lib/cx";
 import { formatDate } from "../lib/format";
+import { parsePositiveIntParam } from "../lib/searchParams";
 import type { Contributor } from "../types/api";
 
 export default function ContributorList() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const page = Number(searchParams.get("page")) || 1;
+  const page = parsePositiveIntParam(searchParams, "page");
   const params = { page, perPage: 24 };
   const { data: result, isPending, isError, error, isFetching } =
     useContributors(params);
@@ -85,7 +86,7 @@ type ContributorCardProps = {
 function ContributorCard({ contributor }: ContributorCardProps) {
   return (
     <Link
-      to={`/contributors/${contributor.username}`}
+      to={`/contributors/${encodeURIComponent(contributor.username)}`}
       state={{ contributor }}
       className="group flex min-w-0 gap-4 rounded-lg border border-gray-200 bg-white p-4 transition hover:border-blue-300 hover:bg-blue-50/40 dark:border-gray-800 dark:bg-gray-900 dark:hover:border-blue-500 dark:hover:bg-blue-500/5"
     >
