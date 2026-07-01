@@ -34,75 +34,109 @@ export default function QuestionDetail() {
     };
   }, [id]);
 
-  if (loading) return <main className="container"><p className="state">Loading…</p></main>;
+  if (loading)
+    return (
+      <main className="container mx-auto flex-1 px-4 py-10">
+        <p className="text-gray-500 dark:text-gray-400">Loading…</p>
+      </main>
+    );
+
   if (error)
     return (
-      <main className="container">
-        <p className="state state-error">Couldn’t load this question: {error}</p>
-        <Link to="/questions" className="back-link">← Back to questions</Link>
+      <main className="container mx-auto flex-1 px-4 py-10">
+        <p className="text-red-600 dark:text-red-400">
+          Couldn’t load this question: {error}
+        </p>
+        <Link
+          to="/questions"
+          className="mt-4 inline-block text-sm font-medium text-blue-600 hover:underline dark:text-blue-400"
+        >
+          ← Back to questions
+        </Link>
       </main>
     );
 
   const active = submissions?.find((s) => s.id === activeId) ?? null;
 
   return (
-    <main className="detail">
-      <div className="detail-header">
-        <Link to="/questions" className="back-link">← All questions</Link>
-        <h1 className="detail-title">{question.course.name}</h1>
-        <div className="question-tags">
-          <span className="tag">{question.department.shortName}</span>
-          <span className="tag">{question.semester.name}</span>
-          <span className="tag">{question.examType.name}</span>
+    <main className="container mx-auto flex flex-1 flex-col px-4 py-5">
+      <div className="mb-4">
+        <Link
+          to="/questions"
+          className="text-sm font-medium text-blue-600 hover:underline dark:text-blue-400"
+        >
+          ← All questions
+        </Link>
+        <h1 className="mt-2 text-xl font-bold tracking-tight sm:text-2xl">
+          {question.course.name}
+        </h1>
+        <div className="mt-2 flex flex-wrap gap-2">
+          <Tag>{question.department.shortName}</Tag>
+          <Tag>{question.semester.name}</Tag>
+          <Tag>{question.examType.name}</Tag>
         </div>
       </div>
 
       {submissions.length > 1 && (
-        <div className="submission-selector">
+        <div className="mb-4 flex flex-wrap gap-2">
           {submissions.map((s) => (
             <button
               key={s.id}
-              className={`submission-chip ${s.id === activeId ? "active" : ""}`}
               onClick={() => setActiveId(s.id)}
+              className={`flex flex-col items-start rounded-lg border px-3.5 py-2 text-left ${
+                s.id === activeId
+                  ? "border-blue-500 bg-gray-50 dark:bg-gray-900"
+                  : "border-gray-200 dark:border-gray-800"
+              }`}
             >
-              <span>{s.contributor?.name ?? "Anonymous"}</span>
-              <small>
+              <span className="text-sm">{s.contributor?.name ?? "Anonymous"}</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400">
                 {[s.section, s.batch].filter(Boolean).join(" · ")}
                 {s.fileSize ? ` · ${formatSize(s.fileSize)}` : ""}
-              </small>
+              </span>
             </button>
           ))}
         </div>
       )}
 
       {!active || !active.pdfUrl ? (
-        <p className="state">No PDF available for this question yet.</p>
+        <p className="text-gray-500 dark:text-gray-400">
+          No PDF available for this question yet.
+        </p>
       ) : (
-        <div className="pdf-wrap">
-          <div className="pdf-toolbar">
-            <span className="pdf-by">
+        <div className="flex min-h-[70vh] flex-1 flex-col overflow-hidden rounded-xl border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-900">
+          <div className="flex items-center justify-between gap-3 border-b border-gray-200 px-4 py-2.5 dark:border-gray-800">
+            <span className="text-sm text-gray-500 dark:text-gray-400">
               {active.contributor?.name
                 ? `Submitted by ${active.contributor.name}`
                 : "Submission"}
               {active.fileSize ? ` · ${formatSize(active.fileSize)}` : ""}
             </span>
             <a
-              className="pdf-fallback"
               href={active.pdfUrl}
               target="_blank"
               rel="noopener"
+              className="shrink-0 rounded-lg bg-blue-600 px-3.5 py-1.5 text-sm font-semibold text-white hover:bg-blue-700"
             >
               Open PDF ↗
             </a>
           </div>
           <iframe
             key={active.id}
-            className="pdf-frame"
             src={active.pdfUrl}
             title={`${question.course.name} question PDF`}
+            className="min-h-[65vh] w-full flex-1 bg-white"
           />
         </div>
       )}
     </main>
+  );
+}
+
+function Tag({ children }) {
+  return (
+    <span className="rounded-full border border-gray-200 bg-white px-2.5 py-0.5 text-xs font-medium text-gray-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400">
+      {children}
+    </span>
   );
 }

@@ -1,17 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getFilterOptions, getQuestions } from "../api";
+import SearchableSelect from "../components/SearchableSelect";
 
-const emptyFilters = {
-  departmentId: "",
-  courseId: "",
-  semesterId: "",
-  examTypeId: "",
-};
+const noFilters = { department: null, course: null, semester: null, examType: null };
 
 export default function QuestionList() {
   const [options, setOptions] = useState(null);
-  const [filters, setFilters] = useState(emptyFilters);
+  const [filters, setFilters] = useState(noFilters);
   const [page, setPage] = useState(1);
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -25,7 +21,14 @@ export default function QuestionList() {
     let active = true;
     setLoading(true);
     setError(null);
-    getQuestions({ ...filters, page, perPage: 20 })
+    getQuestions({
+      departmentId: filters.department?.id,
+      courseId: filters.course?.id,
+      semesterId: filters.semester?.id,
+      examTypeId: filters.examType?.id,
+      page,
+      perPage: 20,
+    })
       .then((r) => active && setResult(r))
       .catch((e) => active && setError(e.message))
       .finally(() => active && setLoading(false));
@@ -34,121 +37,135 @@ export default function QuestionList() {
     };
   }, [filters, page]);
 
-  function setFilter(key, value) {
+  function setFilter(key, option) {
     setPage(1);
     setFilters((f) => {
-      const next = { ...f, [key]: value };
-      // clearing/changing department invalidates the chosen course
-      if (key === "departmentId") next.courseId = "";
+      const next = { ...f, [key]: option };
+      // changing department invalidates the chosen course
+      if (key === "department") next.course = null;
       return next;
     });
   }
 
   const courses =
-    options?.courses.filter(
-      (c) => String(c.departmentId) === String(filters.departmentId)
-    ) ?? [];
+    options?.courses.filter((c) => c.departmentId === filters.department?.id) ??
+    [];
 
   const meta = result?.meta;
+  const byName = (o) => o.name;
 
   return (
-    <main className="container">
-      <h1 className="page-title">Questions</h1>
+    <main className="container mx-auto flex-1 px-4 py-10">
+      <h1 className="mb-6 text-3xl font-bold tracking-tight">Questions</h1>
 
-      <div className="filter-bar">
-        <select
-          value={filters.departmentId}
-          onChange={(e) => setFilter("departmentId", e.target.value)}
-        >
-          <option value="">All departments</option>
-          {options?.departments.map((d) => (
-            <option key={d.id} value={d.id}>
-              {d.name}
-            </option>
-          ))}
-        </select>
-
-        <select
-          value={filters.courseId}
-          disabled={!filters.departmentId}
-          onChange={(e) => setFilter("courseId", e.target.value)}
-        >
-          <option value="">All courses</option>
-          {courses.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.name}
-            </option>
-          ))}
-        </select>
-
-        <select
-          value={filters.semesterId}
-          onChange={(e) => setFilter("semesterId", e.target.value)}
-        >
-          <option value="">All semesters</option>
-          {options?.semesters.map((s) => (
-            <option key={s.id} value={s.id}>
-              {s.name}
-            </option>
-          ))}
-        </select>
-
-        <select
-          value={filters.examTypeId}
-          onChange={(e) => setFilter("examTypeId", e.target.value)}
-        >
-          <option value="">All exam types</option>
-          {options?.examTypes.map((t) => (
-            <option key={t.id} value={t.id}>
-              {t.name}
-            </option>
-          ))}
-        </select>
+      <div className="mb-7 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <SearchableSelect
+          options={options?.departments ?? []}
+          value={filters.department}
+          onChange={(o) => setFilter("department", o)}
+          getLabel={byName}
+          placeholder="All departments"
+        />
+        <SearchableSelect
+          options={courses}
+          value={filters.course}
+          onChange={(o) => setFilter("course", o)}
+          getLabel={byName}
+          placeholder="All courses"
+          disabled={!filters.department}
+        />
+        <SearchableSelect
+          options={options?.semesters ?? []}
+          value={filters.semester}
+          onChange={(o) => setFilter("semester", o)}
+          getLabel={byName}
+          placeholder="All semesters"
+        />
+        <SearchableSelect
+          options={options?.examTypes ?? []}
+          value={filters.examType}
+          onChange={(o) => setFilter("examType", o)}
+          getLabel={byName}
+          placeholder="All exam types"
+        />
       </div>
 
-      {error && <p className="state state-error">Couldn’t load questions: {error}</p>}
-      {loading && <p className="state">Loading…</p>}
+      {error && (
+        <p className="py-6 text-red-600 dark:text-red-400">
+          Couldn’t load questions: {error}
+        </p>
+      )}
+      {loading && <p className="py-6 text-gray-500 dark:text-gray-400">Loading…</p>}
       {!loading && !error && result?.data.length === 0 && (
-        <p className="state">No questions match these filters.</p>
+        <p className="py-6 text-gray-500 dark:text-gray-400">
+          No questions match these filters.
+        </p>
       )}
 
       {!loading && !error && result?.data.length > 0 && (
-        <div className="question-grid">
+        <ul className="flex flex-col gap-3">
           {result.data.map((q) => (
-            <Link key={q.id} to={`/questions/${q.id}`} className="question-card">
-              <h2 className="question-course">{q.course.name}</h2>
-              <div className="question-tags">
-                <span className="tag">{q.department.shortName}</span>
-                <span className="tag">{q.semester.name}</span>
-                <span className="tag">{q.examType.name}</span>
-              </div>
-              <span className="question-count">
-                {q.submissionCount} submission{q.submissionCount === 1 ? "" : "s"}
-              </span>
-            </Link>
+            <li key={q.id}>
+              <Link
+                to={`/questions/${q.id}`}
+                className="flex flex-col gap-3 rounded-xl border border-gray-200 bg-gray-50 p-5 transition hover:border-blue-500 hover:shadow-sm sm:flex-row sm:items-center sm:justify-between dark:border-gray-800 dark:bg-gray-900 dark:hover:border-blue-500"
+              >
+                <div className="flex flex-col gap-2">
+                  <h2 className="text-base font-semibold">{q.course.name}</h2>
+                  <div className="flex flex-wrap gap-2">
+                    <Tag>{q.department.shortName}</Tag>
+                    <Tag>{q.semester.name}</Tag>
+                    <Tag>{q.examType.name}</Tag>
+                  </div>
+                </div>
+                <span className="shrink-0 text-sm text-gray-500 dark:text-gray-400">
+                  {q.submissionCount} submission{q.submissionCount === 1 ? "" : "s"}
+                </span>
+              </Link>
+            </li>
           ))}
-        </div>
+        </ul>
       )}
 
       {meta && meta.totalPages > 1 && (
-        <div className="pagination">
-          <button
+        <div className="mt-9 flex items-center justify-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+          <PageButton
             disabled={meta.page <= 1 || loading}
             onClick={() => setPage((p) => p - 1)}
           >
             ← Prev
-          </button>
+          </PageButton>
           <span>
             Page {meta.page} of {meta.totalPages}
           </span>
-          <button
+          <PageButton
             disabled={meta.page >= meta.totalPages || loading}
             onClick={() => setPage((p) => p + 1)}
           >
             Next →
-          </button>
+          </PageButton>
         </div>
       )}
     </main>
+  );
+}
+
+function Tag({ children }) {
+  return (
+    <span className="rounded-full border border-gray-200 bg-white px-2.5 py-0.5 text-xs font-medium text-gray-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400">
+      {children}
+    </span>
+  );
+}
+
+function PageButton({ disabled, onClick, children }) {
+  return (
+    <button
+      disabled={disabled}
+      onClick={onClick}
+      className="rounded-lg border border-gray-300 px-4 py-2 text-sm text-gray-900 enabled:hover:border-blue-500 disabled:cursor-not-allowed disabled:opacity-40 dark:border-gray-700 dark:text-gray-100"
+    >
+      {children}
+    </button>
   );
 }
