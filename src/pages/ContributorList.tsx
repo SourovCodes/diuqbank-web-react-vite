@@ -28,10 +28,7 @@ export default function ContributorList() {
   return (
     <main className="container mx-auto flex-1 px-4 py-8 sm:py-10">
       <div className="mb-7 border-b border-gray-200 pb-6 dark:border-gray-800">
-        <p className="text-xs font-semibold uppercase tracking-widest text-blue-600 dark:text-blue-400">
-          Community
-        </p>
-        <h1 className="mt-3 text-2xl font-bold tracking-tight text-gray-900 dark:text-gray-100 sm:text-3xl">
+        <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-gray-100 sm:text-3xl">
           Contributors
         </h1>
         <p className="mt-2 max-w-2xl text-sm leading-6 text-gray-500 dark:text-gray-400">
