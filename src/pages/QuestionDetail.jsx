@@ -1,45 +1,38 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { getQuestion, getSubmissions } from "../api";
+import { useQuestion, useSubmissions } from "../hooks/queries";
 import { Badge } from "../components/ui/Badge";
 import { cx } from "../lib/cx";
 import { formatBytes, formatDate } from "../lib/format";
 
 export default function QuestionDetail() {
   const { id } = useParams();
-  const [question, setQuestion] = useState(null);
-  const [submissions, setSubmissions] = useState([]);
+  const { data: question, isPending, isError } = useQuestion(id);
+  const { data: submissionsData } = useSubmissions(id);
+
+  const submissions = useMemo(
+    () =>
+      (submissionsData?.data ?? [])
+        .slice()
+        .sort((a, b) => b.createdAt - a.createdAt),
+    [submissionsData]
+  );
+
   const [selectedId, setSelectedId] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
+  // Auto-select the newest submission that has a PDF once they load.
   useEffect(() => {
-    let active = true;
-    setLoading(true);
-    setError(null);
-    Promise.all([getQuestion(id), getSubmissions(id)])
-      .then(([q, s]) => {
-        if (!active) return;
-        setQuestion(q);
-        const sorted = s.data.slice().sort((a, b) => b.createdAt - a.createdAt);
-        setSubmissions(sorted);
-        setSelectedId(sorted.find((x) => x.pdfUrl)?.id ?? null);
-      })
-      .catch((e) => active && setError(e.message))
-      .finally(() => active && setLoading(false));
-    return () => {
-      active = false;
-    };
-  }, [id]);
+    setSelectedId(submissions.find((s) => s.pdfUrl)?.id ?? null);
+  }, [submissionsData]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  if (loading)
+  if (isPending)
     return (
       <div className="container mx-auto flex-1 px-4 py-16 text-center text-sm text-gray-500 dark:text-gray-400">
         Loading…
       </div>
     );
 
-  if (error || !question)
+  if (isError || !question)
     return (
       <div className="container mx-auto flex-1 px-4 py-12">
         <p className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">
