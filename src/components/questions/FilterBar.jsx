@@ -1,6 +1,7 @@
 import { SearchableSelect } from "../ui/SearchableSelect";
 
-const labelClass = "mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400";
+const labelClass =
+  "mb-1.5 block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400";
 
 export function FilterBar({ options, filters, onFilterChange, onDepartmentChange, onClear }) {
   const visibleCourses = filters.departmentId
@@ -23,7 +24,7 @@ export function FilterBar({ options, filters, onFilterChange, onDepartmentChange
   );
 
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+    <section className="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <div>
           <label className={labelClass}>Department</label>
@@ -67,12 +68,12 @@ export function FilterBar({ options, filters, onFilterChange, onDepartmentChange
         <div className="mt-3 flex justify-end">
           <button
             onClick={onClear}
-            className="text-xs font-medium text-blue-600 hover:text-blue-800 hover:underline dark:text-blue-400"
+            className="rounded-md px-2 py-1 text-xs font-semibold text-blue-600 hover:bg-blue-50 hover:text-blue-800 dark:text-blue-400 dark:hover:bg-blue-500/10"
           >
             Clear filters
           </button>
         </div>
       )}
-    </div>
+    </section>
   );
 }

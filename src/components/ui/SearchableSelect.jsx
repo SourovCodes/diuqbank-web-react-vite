@@ -41,7 +41,7 @@ export function SearchableSelect({
         disabled={disabled}
         onClick={() => !disabled && setOpen((o) => !o)}
         className={cx(
-          "flex w-full items-center justify-between rounded-lg border px-3 py-2 text-left text-sm shadow-sm transition",
+          "flex w-full items-center justify-between rounded-lg border px-3 py-2 text-left text-sm transition",
           disabled
             ? "cursor-not-allowed border-gray-200 text-gray-400 opacity-60 dark:border-gray-800"
             : "cursor-pointer border-gray-300 bg-white text-gray-700 hover:border-blue-400 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200",

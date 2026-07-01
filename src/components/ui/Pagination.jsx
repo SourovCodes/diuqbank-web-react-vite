@@ -13,10 +13,10 @@ export function Pagination({ meta, onPageChange }) {
   if (totalPages <= 1) return null;
 
   const nav =
-    "rounded-md px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40 dark:text-gray-300 dark:hover:bg-gray-800";
+    "rounded-md px-3 py-1.5 text-sm font-semibold text-gray-600 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40 dark:text-gray-300 dark:hover:bg-gray-800";
 
   return (
-    <nav className="flex items-center justify-center gap-1 py-6" aria-label="Pagination">
+    <nav className="flex flex-wrap items-center justify-center gap-1 py-6" aria-label="Pagination">
       <button onClick={() => onPageChange(page - 1)} disabled={page === 1} className={nav}>
         ← Prev
       </button>
@@ -31,7 +31,7 @@ export function Pagination({ meta, onPageChange }) {
             key={p}
             onClick={() => onPageChange(p)}
             className={cx(
-              "min-w-[2rem] rounded-md px-2 py-1.5 text-sm font-medium",
+              "min-w-8 rounded-md px-2 py-1.5 text-sm font-semibold",
               p === page
                 ? "bg-blue-600 text-white"
                 : "text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
