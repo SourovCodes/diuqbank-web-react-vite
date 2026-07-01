@@ -1,11 +1,11 @@
-export function formatBytes(bytes) {
+export function formatBytes(bytes?: number | null): string {
   if (!bytes) return "—";
   const mb = bytes / (1024 * 1024);
   return mb >= 1 ? `${mb.toFixed(1)} MB` : `${Math.round(bytes / 1024)} KB`;
 }
 
 // API sends unix seconds
-export function formatDate(unixSeconds) {
+export function formatDate(unixSeconds?: number | null): string {
   if (!unixSeconds) return "";
   return new Date(unixSeconds * 1000).toLocaleDateString(undefined, {
     year: "numeric",

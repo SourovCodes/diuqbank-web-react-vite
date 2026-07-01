@@ -1,10 +1,22 @@
 import { useState } from "react";
-import { Link, NavLink, Outlet, Routes, Route } from "react-router-dom";
+import {
+  Link,
+  NavLink,
+  Outlet,
+  Routes,
+  Route,
+  type NavLinkRenderProps,
+} from "react-router-dom";
 import Home from "./pages/Home";
 import QuestionList from "./pages/QuestionList";
 import QuestionDetail from "./pages/QuestionDetail";
 
-const navLinks = [
+type NavLinkItem = {
+  label: string;
+  to: string;
+};
+
+const navLinks: NavLinkItem[] = [
   { label: "Home", to: "/" },
   { label: "Questions", to: "/questions" },
 ];
@@ -13,7 +25,7 @@ function Navbar() {
   const [open, setOpen] = useState(false);
   const close = () => setOpen(false);
 
-  const linkClass = ({ isActive }) =>
+  const linkClass = ({ isActive }: NavLinkRenderProps) =>
     `text-sm transition-colors ${
       isActive
         ? "font-semibold text-gray-900 dark:text-gray-100"

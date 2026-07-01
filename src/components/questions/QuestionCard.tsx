@@ -1,7 +1,12 @@
 import { Link } from "react-router-dom";
 import { Badge } from "../ui/Badge";
+import type { Question } from "../../types/api";
 
-export function QuestionCard({ question }) {
+type QuestionCardProps = {
+  question: Question;
+};
+
+export function QuestionCard({ question }: QuestionCardProps) {
   return (
     <Link
       to={`/questions/${question.id}`}

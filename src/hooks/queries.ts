@@ -5,6 +5,7 @@ import {
   getQuestion,
   getSubmissions,
 } from "../api";
+import type { QuestionFilters } from "../types/api";
 
 // Filter options are basically static — cache them for the whole session.
 export function useFilterOptions() {
@@ -15,7 +16,7 @@ export function useFilterOptions() {
   });
 }
 
-export function useQuestions(params) {
+export function useQuestions(params: QuestionFilters) {
   return useQuery({
     queryKey: ["questions", params],
     queryFn: () => getQuestions(params),
@@ -23,18 +24,18 @@ export function useQuestions(params) {
   });
 }
 
-export function useQuestion(id) {
+export function useQuestion(id?: string) {
   return useQuery({
     queryKey: ["question", id],
-    queryFn: () => getQuestion(id),
+    queryFn: () => getQuestion(id as string),
     enabled: !!id,
   });
 }
 
-export function useSubmissions(id) {
+export function useSubmissions(id?: string) {
   return useQuery({
     queryKey: ["submissions", id],
-    queryFn: () => getSubmissions(id),
+    queryFn: () => getSubmissions(id as string),
     enabled: !!id,
   });
 }

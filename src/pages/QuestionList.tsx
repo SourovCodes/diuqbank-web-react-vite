@@ -4,11 +4,14 @@ import { FilterBar } from "../components/questions/FilterBar";
 import { QuestionCard } from "../components/questions/QuestionCard";
 import { Pagination } from "../components/ui/Pagination";
 import { cx } from "../lib/cx";
+import type { QuestionFilters } from "../types/api";
+
+type FilterKey = Exclude<keyof QuestionFilters, "page" | "perPage">;
 
 export default function QuestionList() {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const filters = {
+  const filters: QuestionFilters = {
     page: Number(searchParams.get("page")) || 1,
     perPage: 20,
     departmentId: searchParams.get("departmentId") ?? "",
@@ -21,7 +24,7 @@ export default function QuestionList() {
   const { data: result, isPending, isError, error, isFetching } =
     useQuestions(filters);
 
-  function updateFilter(key, value) {
+  function updateFilter(key: FilterKey, value: string) {
     setSearchParams(
       (prev) => {
         const next = new URLSearchParams(prev);
@@ -34,7 +37,7 @@ export default function QuestionList() {
     );
   }
 
-  function handleDepartmentChange(deptId) {
+  function handleDepartmentChange(deptId: string) {
     setSearchParams(
       (prev) => {
         const next = new URLSearchParams(prev);
@@ -52,7 +55,7 @@ export default function QuestionList() {
     setSearchParams({}, { replace: true });
   }
 
-  function goToPage(page) {
+  function goToPage(page: number) {
     setSearchParams((prev) => {
       const next = new URLSearchParams(prev);
       next.set("page", String(page));

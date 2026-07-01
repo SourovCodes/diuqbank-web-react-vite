@@ -1,18 +1,26 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import { cx } from "../../lib/cx";
+import type { SelectOption } from "../../types/api";
 
-// options: { value: string, label: string }[]  — value/onChange are strings.
+type SearchableSelectProps = {
+  options: SelectOption[];
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  disabled?: boolean;
+};
+
 export function SearchableSelect({
   options,
   value,
   onChange,
   placeholder = "Select...",
   disabled = false,
-}) {
+}: SearchableSelectProps) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const containerRef = useRef(null);
-  const inputRef = useRef(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const selected = options.find((o) => o.value === value);
   const filtered = query
@@ -25,8 +33,12 @@ export function SearchableSelect({
   }, [open]);
 
   useEffect(() => {
-    function onDown(e) {
-      if (containerRef.current && !containerRef.current.contains(e.target)) {
+    function onDown(e: MouseEvent) {
+      if (
+        e.target instanceof Node &&
+        containerRef.current &&
+        !containerRef.current.contains(e.target)
+      ) {
         setOpen(false);
       }
     }
@@ -71,7 +83,9 @@ export function SearchableSelect({
               ref={inputRef}
               type="text"
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                setQuery(e.target.value)
+              }
               placeholder="Search..."
               className="w-full rounded border border-gray-200 px-2 py-1.5 text-sm outline-none focus:border-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
             />

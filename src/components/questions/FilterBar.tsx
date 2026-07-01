@@ -1,15 +1,32 @@
 import { SearchableSelect } from "../ui/SearchableSelect";
+import type { FilterOptions, QuestionFilters, SelectOption } from "../../types/api";
 
 const labelClass =
   "mb-1.5 block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400";
 
-export function FilterBar({ options, filters, onFilterChange, onDepartmentChange, onClear }) {
+type FilterKey = Exclude<keyof QuestionFilters, "page" | "perPage">;
+
+type FilterBarProps = {
+  options: FilterOptions;
+  filters: QuestionFilters;
+  onFilterChange: (key: FilterKey, value: string) => void;
+  onDepartmentChange: (deptId: string) => void;
+  onClear: () => void;
+};
+
+export function FilterBar({
+  options,
+  filters,
+  onFilterChange,
+  onDepartmentChange,
+  onClear,
+}: FilterBarProps) {
   const visibleCourses = filters.departmentId
     ? options.courses.filter((c) => c.departmentId === Number(filters.departmentId))
     : options.courses;
 
   const deptShort = new Map(options.departments.map((d) => [d.id, d.shortName]));
-  const courseOptions = visibleCourses.map((c) => ({
+  const courseOptions: SelectOption[] = visibleCourses.map((c) => ({
     value: String(c.id),
     label: filters.departmentId
       ? c.name

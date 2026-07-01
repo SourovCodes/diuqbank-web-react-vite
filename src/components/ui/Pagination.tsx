@@ -1,6 +1,14 @@
 import { cx } from "../../lib/cx";
+import type { PaginationMeta } from "../../types/api";
 
-function pageRange(current, total) {
+type PageItem = number | "...";
+
+type PaginationProps = {
+  meta: PaginationMeta;
+  onPageChange: (page: number) => void;
+};
+
+function pageRange(current: number, total: number): PageItem[] {
   if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
   if (current <= 4) return [1, 2, 3, 4, 5, "...", total];
   if (current >= total - 3)
@@ -8,7 +16,7 @@ function pageRange(current, total) {
   return [1, "...", current - 1, current, current + 1, "...", total];
 }
 
-export function Pagination({ meta, onPageChange }) {
+export function Pagination({ meta, onPageChange }: PaginationProps) {
   const { page, totalPages } = meta;
   if (totalPages <= 1) return null;
 

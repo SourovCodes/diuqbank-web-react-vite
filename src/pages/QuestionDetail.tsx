@@ -18,12 +18,12 @@ export default function QuestionDetail() {
     [submissionsData]
   );
 
-  const [selectedId, setSelectedId] = useState(null);
+  const [selectedId, setSelectedId] = useState<number | null>(null);
 
   // Auto-select the newest submission that has a PDF once they load.
   useEffect(() => {
     setSelectedId(submissions.find((s) => s.pdfUrl)?.id ?? null);
-  }, [submissionsData]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [submissions]);
 
   if (isPending)
     return (
@@ -199,7 +199,12 @@ export default function QuestionDetail() {
   );
 }
 
-function Row({ label, value }) {
+type RowProps = {
+  label: string;
+  value: string;
+};
+
+function Row({ label, value }: RowProps) {
   return (
     <div className="flex justify-between">
       <dt className="text-gray-500 dark:text-gray-400">{label}</dt>
