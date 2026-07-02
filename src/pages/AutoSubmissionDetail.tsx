@@ -107,7 +107,7 @@ export default function AutoSubmissionDetail() {
 
         <aside className="w-full shrink-0 space-y-4 lg:w-80">
           {hasMetadata && (
-            <div className="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
+            <div className="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
               <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
                 Extracted details
               </h2>
@@ -121,7 +121,7 @@ export default function AutoSubmissionDetail() {
           )}
 
           {sub.aiReasoning && (
-            <div className="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
+            <div className="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
               <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
                 AI reasoning
               </h2>
@@ -132,7 +132,7 @@ export default function AutoSubmissionDetail() {
           )}
 
           {sub.status !== "published" && (
-            <div className="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
+            <div className="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
               <Button
                 variant="danger"
                 loading={remove.isPending}

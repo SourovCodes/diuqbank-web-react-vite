@@ -90,7 +90,7 @@ export default function ManualSubmissionDetail() {
         </div>
 
         <aside className="w-full shrink-0 lg:w-72">
-          <div className="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
+          <div className="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
             <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
               Details
             </h2>

@@ -65,8 +65,9 @@ export default function Login() {
   if (user) return <Navigate to={from} replace />;
 
   return (
-    <main className="container mx-auto flex flex-1 items-center justify-center px-4 py-16 sm:py-24">
-      <section className="w-full max-w-md rounded-2xl border border-gray-200 bg-white p-8 text-center shadow-sm dark:border-gray-800 dark:bg-gray-900">
+    <main className="relative isolate flex flex-1 items-center justify-center px-4 py-16 sm:py-24">
+      <div className="hero-glow absolute inset-0 -z-10" aria-hidden="true" />
+      <section className="animate-fade-up w-full max-w-md rounded-2xl border border-gray-200 bg-white p-8 text-center shadow-sm dark:border-gray-800 dark:bg-gray-900">
         <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-blue-600 dark:text-blue-400">
           Welcome back
         </p>

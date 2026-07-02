@@ -57,7 +57,7 @@ export default function Profile() {
                 className="h-24 w-24 rounded-full object-cover"
               />
             ) : (
-              <div className="flex h-24 w-24 items-center justify-center rounded-full bg-blue-100 text-3xl font-bold text-blue-700 dark:bg-blue-500/20 dark:text-blue-300">
+              <div className="flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 text-3xl font-bold text-white">
                 {user.name[0]?.toUpperCase() ?? "?"}
               </div>
             )}

@@ -21,7 +21,7 @@ export function Pagination({ meta, onPageChange }: PaginationProps) {
   if (totalPages <= 1) return null;
 
   const nav =
-    "rounded-md px-3 py-1.5 text-sm font-semibold text-gray-600 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40 dark:text-gray-300 dark:hover:bg-gray-800";
+    "rounded-md px-3 py-1.5 text-sm font-semibold text-gray-600 transition hover:bg-gray-100 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 disabled:active:scale-100 dark:text-gray-300 dark:hover:bg-gray-800";
 
   return (
     <nav className="flex flex-wrap items-center justify-center gap-1 py-6" aria-label="Pagination">
@@ -39,9 +39,9 @@ export function Pagination({ meta, onPageChange }: PaginationProps) {
             key={p}
             onClick={() => onPageChange(p)}
             className={cx(
-              "min-w-8 rounded-md px-2 py-1.5 text-sm font-semibold",
+              "min-w-8 rounded-md px-2 py-1.5 text-sm font-semibold transition active:scale-95",
               p === page
-                ? "bg-blue-600 text-white"
+                ? "bg-blue-600 text-white shadow-sm"
                 : "text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
             )}
           >

@@ -153,7 +153,7 @@ export default function ManualSubmissionCreate() {
             <ol className="mt-4 space-y-4">
               {steps.map((step, i) => (
                 <li key={i} className="flex gap-3">
-                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-blue-700 dark:bg-blue-500/20 dark:text-blue-300">
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 text-xs font-bold text-white">
                     {i + 1}
                   </span>
                   <span className="text-sm leading-6 text-gray-600 dark:text-gray-300">

@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useFilterOptions, useQuestions } from "../hooks/queries";
 import { FilterBar } from "../components/questions/FilterBar";
-import { QuestionCard } from "../components/questions/QuestionCard";
+import { QuestionCard, QuestionCardSkeleton } from "../components/questions/QuestionCard";
 import { Pagination } from "../components/ui/Pagination";
 import { cx } from "../lib/cx";
 import { parsePositiveIntParam } from "../lib/searchParams";
@@ -70,8 +70,21 @@ export default function QuestionList() {
   }
 
   return (
-    <main className="container mx-auto flex-1 px-4 py-6 sm:py-8">
-      <div className="mb-6">
+    <main className="container mx-auto flex-1 px-4 py-8 sm:py-10">
+      <header className="mb-6">
+        <p className="text-xs font-semibold uppercase tracking-widest text-blue-600 dark:text-blue-400">
+          Question archive
+        </p>
+        <h1 className="mt-1.5 text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl dark:text-gray-100">
+          Browse past questions
+        </h1>
+        <p className="mt-2 max-w-2xl text-sm leading-6 text-gray-500 dark:text-gray-400">
+          Filter by department, course, semester and exam type, then open any
+          paper right in your browser.
+        </p>
+      </header>
+
+      <div className="mb-5">
         <FilterBar
           options={options}
           filters={filters}
@@ -87,11 +100,20 @@ export default function QuestionList() {
           Failed to load questions: {error.message}
         </p>
       ) : isPending ? (
-        <p className="rounded-lg border border-dashed border-gray-200 py-14 text-center text-sm text-gray-500 dark:border-gray-800 dark:text-gray-400">
-          Loading questions...
-        </p>
+        <div className="flex flex-col gap-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <QuestionCardSkeleton key={i} />
+          ))}
+        </div>
       ) : (
         <>
+          <p className="mb-3 text-sm text-gray-500 dark:text-gray-400">
+            <span className="font-bold text-gray-900 dark:text-gray-100">
+              {result.meta.total.toLocaleString()}
+            </span>{" "}
+            {result.meta.total === 1 ? "paper" : "papers"} found
+          </p>
+
           <div
             className={cx(
               "flex flex-col gap-3 transition-opacity",
@@ -99,7 +121,7 @@ export default function QuestionList() {
             )}
           >
             {result.data.length === 0 ? (
-              <div className="rounded-lg border border-dashed border-gray-200 py-16 text-center dark:border-gray-800">
+              <div className="rounded-xl border border-dashed border-gray-200 py-16 text-center dark:border-gray-800">
                 <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
                   No questions found
                 </h2>

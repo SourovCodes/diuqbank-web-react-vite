@@ -4,6 +4,7 @@ import { useAutoSubmissions } from "../hooks/queries";
 import { Pagination } from "../components/ui/Pagination";
 import { SubmissionTabs } from "../components/submissions/SubmissionTabs";
 import { SubmissionCard } from "../components/submissions/SubmissionCard";
+import { SkeletonCard } from "../components/ui/Card";
 import { cx } from "../lib/cx";
 import { parsePositiveIntParam } from "../lib/searchParams";
 
@@ -56,11 +57,13 @@ export default function AutoSubmissionList() {
           Failed to load submissions: {error.message}
         </p>
       ) : isPending ? (
-        <p className="rounded-lg border border-dashed border-gray-200 py-14 text-center text-sm text-gray-500 dark:border-gray-800 dark:text-gray-400">
-          Loading submissions…
-        </p>
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <SkeletonCard key={i} />
+          ))}
+        </div>
       ) : data.data.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-gray-200 py-16 text-center dark:border-gray-800">
+        <div className="rounded-xl border border-dashed border-gray-200 py-16 text-center dark:border-gray-800">
           <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
             No AI submissions yet
           </h2>

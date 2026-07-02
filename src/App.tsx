@@ -53,7 +53,14 @@ function Navbar() {
   return (
     <header className="sticky top-0 z-30 border-b border-gray-200 bg-white/85 backdrop-blur dark:border-gray-800 dark:bg-gray-950/85">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        <Link to="/" className="text-lg font-bold tracking-tight" onClick={close}>
+        <Link
+          to="/"
+          className="flex items-center gap-2 text-lg font-bold tracking-tight"
+          onClick={close}
+        >
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-blue-600 to-indigo-500 text-sm font-black text-white">
+            Q
+          </span>
           DIUQBank
         </Link>
 
@@ -83,7 +90,7 @@ function Navbar() {
             <>
               <Link
                 to="/submissions/manual"
-                className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
+                className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700 active:scale-[0.98]"
               >
                 Submit
               </Link>
@@ -92,7 +99,7 @@ function Navbar() {
           ) : (
             <Link
               to="/login"
-              className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
+              className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700 active:scale-[0.98]"
             >
               Sign in
             </Link>
@@ -119,7 +126,7 @@ function Navbar() {
               <Link
                 to="/submissions/manual/new"
                 onClick={close}
-                className="mt-2 rounded-lg bg-blue-600 px-4 py-2.5 text-center text-sm font-semibold text-white hover:bg-blue-700"
+                className="mt-2 rounded-lg bg-blue-600 px-4 py-2.5 text-center text-sm font-semibold text-white transition hover:bg-blue-700 active:scale-[0.98]"
               >
                 New submission
               </Link>
@@ -128,7 +135,7 @@ function Navbar() {
             <Link
               to="/login"
               onClick={close}
-              className="mt-2 rounded-lg bg-blue-600 px-4 py-2.5 text-center text-sm font-semibold text-white hover:bg-blue-700"
+              className="mt-2 rounded-lg bg-blue-600 px-4 py-2.5 text-center text-sm font-semibold text-white transition hover:bg-blue-700 active:scale-[0.98]"
             >
               Sign in
             </Link>
@@ -143,7 +150,12 @@ function Footer() {
   return (
     <footer className="border-t border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-900">
       <div className="container mx-auto flex flex-col items-center justify-between gap-4 px-4 py-8 text-center sm:flex-row sm:text-left">
-        <span className="font-bold">DIUQBank</span>
+        <span className="flex items-center gap-2 font-bold">
+          <span className="flex h-6 w-6 items-center justify-center rounded-md bg-gradient-to-br from-blue-600 to-indigo-500 text-xs font-black text-white">
+            Q
+          </span>
+          DIUQBank
+        </span>
         <nav className="flex flex-wrap gap-6">
           {navLinks.map((link) => (
             <Link

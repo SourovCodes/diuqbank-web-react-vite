@@ -3,6 +3,7 @@ import { Link, useLocation, useParams } from "react-router-dom";
 import { useQuestion, useSubmissions } from "../hooks/queries";
 import { Badge } from "../components/ui/Badge";
 import { StatusPage } from "../components/ui/StatusPage";
+import { PdfPreview } from "../components/submissions/SubmissionParts";
 import { cx } from "../lib/cx";
 import { formatBytes, formatDate } from "../lib/format";
 import type { QuestionDetail as QuestionDetailData } from "../types/api";
@@ -109,12 +110,10 @@ export default function QuestionDetail() {
               </p>
             </div>
           ) : selected?.pdfUrl ? (
-            <iframe
+            <PdfPreview
               key={selected.id}
-              src={selected.pdfUrl}
+              url={selected.pdfUrl}
               title="Question paper"
-              className="w-full rounded-lg border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900"
-              style={{ height: "calc(100vh - 260px)", minHeight: "440px" }}
             />
           ) : (
             <div
@@ -136,7 +135,7 @@ export default function QuestionDetail() {
           <aside className="w-full shrink-0 lg:sticky lg:top-20 lg:w-80">
             <div className="flex flex-col gap-4">
               {isSubmissionsPending && (
-                <section className="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
+                <section className="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
                   <h2 className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
                     Submissions
                   </h2>
@@ -147,7 +146,7 @@ export default function QuestionDetail() {
               )}
 
               {showSubmissionSelector && (
-                <section className="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
+                <section className="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
                   <div className="mb-3 flex items-center justify-between gap-3">
                     <h2 className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
                       Submissions
@@ -191,7 +190,7 @@ export default function QuestionDetail() {
               )}
 
               {selected && (
-                <section className="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
+                <section className="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
                   <h3 className="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
                     Contributor
                   </h3>
@@ -254,7 +253,7 @@ function ContributorIdentity({
           className="h-10 w-10 shrink-0 rounded-full object-cover"
         />
       ) : (
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-700 dark:bg-blue-500/20 dark:text-blue-300">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 text-sm font-bold text-white">
           {name[0]?.toUpperCase() ?? "?"}
         </div>
       )}

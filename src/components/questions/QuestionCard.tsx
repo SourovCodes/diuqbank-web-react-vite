@@ -11,10 +11,10 @@ export function QuestionCard({ question }: QuestionCardProps) {
     <Link
       to={`/questions/${question.id}`}
       state={{ question }}
-      className="group grid gap-4 rounded-lg border border-gray-200 bg-white p-4 transition hover:border-blue-300 hover:bg-blue-50/40 dark:border-gray-800 dark:bg-gray-900 dark:hover:border-blue-500 dark:hover:bg-blue-500/5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center"
+      className="group grid gap-4 rounded-xl border border-gray-200 bg-white p-4 transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md dark:border-gray-800 dark:bg-gray-900 dark:hover:border-blue-500 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center"
     >
       <div className="min-w-0">
-        <h3 className="text-sm font-semibold leading-6 text-gray-900 group-hover:text-blue-700 dark:text-gray-100 dark:group-hover:text-blue-400">
+        <h3 className="text-base font-semibold leading-6 text-gray-900 group-hover:text-blue-700 dark:text-gray-100 dark:group-hover:text-blue-400">
           {question.course.name}
         </h3>
         <div className="mt-3 flex flex-wrap gap-1.5">
@@ -34,5 +34,18 @@ export function QuestionCard({ question }: QuestionCardProps) {
         </span>
       </div>
     </Link>
+  );
+}
+
+export function QuestionCardSkeleton() {
+  return (
+    <div className="animate-pulse rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
+      <div className="h-4 w-2/5 rounded bg-gray-200 dark:bg-gray-800" />
+      <div className="mt-3.5 flex gap-1.5">
+        <div className="h-5 w-16 rounded-full bg-gray-200 dark:bg-gray-800" />
+        <div className="h-5 w-20 rounded-full bg-gray-200 dark:bg-gray-800" />
+        <div className="h-5 w-14 rounded-full bg-gray-200 dark:bg-gray-800" />
+      </div>
+    </div>
   );
 }

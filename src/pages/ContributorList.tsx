@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useContributors } from "../hooks/queries";
 import { Pagination } from "../components/ui/Pagination";
+import { SkeletonCard } from "../components/ui/Card";
 import { cx } from "../lib/cx";
 import { formatDate } from "../lib/format";
 import { parsePositiveIntParam } from "../lib/searchParams";
@@ -29,7 +30,10 @@ export default function ContributorList() {
   return (
     <main className="container mx-auto flex-1 px-4 py-8 sm:py-10">
       <div className="mb-7 border-b border-gray-200 pb-6 dark:border-gray-800">
-        <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-gray-100 sm:text-3xl">
+        <p className="text-xs font-semibold uppercase tracking-widest text-blue-600 dark:text-blue-400">
+          The community
+        </p>
+        <h1 className="mt-1.5 text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl dark:text-gray-100">
           Contributors
         </h1>
         <p className="mt-2 max-w-2xl text-sm leading-6 text-gray-500 dark:text-gray-400">
@@ -42,9 +46,11 @@ export default function ContributorList() {
           Failed to load contributors: {error.message}
         </p>
       ) : isPending ? (
-        <p className="rounded-lg border border-dashed border-gray-200 py-14 text-center text-sm text-gray-500 dark:border-gray-800 dark:text-gray-400">
-          Loading contributors...
-        </p>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <SkeletonCard key={i} />
+          ))}
+        </div>
       ) : (
         <>
           <div
@@ -88,7 +94,7 @@ function ContributorCard({ contributor }: ContributorCardProps) {
     <Link
       to={`/contributors/${encodeURIComponent(contributor.username)}`}
       state={{ contributor }}
-      className="group flex min-w-0 gap-4 rounded-lg border border-gray-200 bg-white p-4 transition hover:border-blue-300 hover:bg-blue-50/40 dark:border-gray-800 dark:bg-gray-900 dark:hover:border-blue-500 dark:hover:bg-blue-500/5"
+      className="group flex min-w-0 gap-4 rounded-xl border border-gray-200 bg-white p-4 transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md dark:border-gray-800 dark:bg-gray-900 dark:hover:border-blue-500"
     >
       <Avatar contributor={contributor} />
 
@@ -126,7 +132,7 @@ function Avatar({ contributor }: ContributorCardProps) {
   }
 
   return (
-    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-700 dark:bg-blue-500/20 dark:text-blue-300">
+    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 text-sm font-bold text-white">
       {contributor.name[0]?.toUpperCase() ?? "?"}
     </div>
   );

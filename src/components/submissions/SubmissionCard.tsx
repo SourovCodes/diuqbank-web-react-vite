@@ -15,7 +15,7 @@ export function SubmissionCard({ to, title, meta, status, createdAt }: Props) {
   return (
     <Link
       to={to}
-      className="group flex flex-col rounded-lg border border-gray-200 bg-white p-5 transition hover:border-blue-300 hover:bg-blue-50/40 dark:border-gray-800 dark:bg-gray-900 dark:hover:border-blue-500 dark:hover:bg-blue-500/5"
+      className="group flex flex-col rounded-xl border border-gray-200 bg-white p-5 transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md dark:border-gray-800 dark:bg-gray-900 dark:hover:border-blue-500"
     >
       <div className="flex items-start justify-between gap-3">
         <h3 className="min-w-0 truncate text-sm font-semibold text-gray-900 group-hover:text-blue-700 dark:text-gray-100 dark:group-hover:text-blue-400">

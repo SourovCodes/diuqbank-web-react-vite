@@ -85,7 +85,7 @@ function Avatar({ name, image }: { name: string; image: string | null }) {
     return <img src={image} alt="" className="h-7 w-7 rounded-full object-cover" />;
   }
   return (
-    <div className="flex h-7 w-7 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-blue-700 dark:bg-blue-500/20 dark:text-blue-300">
+    <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 text-xs font-bold text-white">
       {name[0]?.toUpperCase() ?? "?"}
     </div>
   );

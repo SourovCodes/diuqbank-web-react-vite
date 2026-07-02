@@ -5,6 +5,7 @@ import {
   useContributorSubmissions,
 } from "../hooks/queries";
 import { Badge } from "../components/ui/Badge";
+import { SkeletonCard } from "../components/ui/Card";
 import { Pagination } from "../components/ui/Pagination";
 import { StatusPage } from "../components/ui/StatusPage";
 import { cx } from "../lib/cx";
@@ -125,9 +126,11 @@ export default function ContributorDetail() {
             Failed to load submissions: {submissionsError.message}
           </p>
         ) : isSubmissionsPending ? (
-          <p className="rounded-lg border border-dashed border-gray-200 py-14 text-center text-sm text-gray-500 dark:border-gray-800 dark:text-gray-400">
-            Loading submissions...
-          </p>
+          <div className="flex flex-col gap-3">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <SkeletonCard key={i} />
+            ))}
+          </div>
         ) : (
           <>
             <div
@@ -170,7 +173,7 @@ type StatProps = {
 
 function Stat({ label, value }: StatProps) {
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-3 dark:border-gray-800 dark:bg-gray-900">
+    <div className="rounded-xl border border-gray-200 bg-white p-3 dark:border-gray-800 dark:bg-gray-900">
       <dt className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
         {label}
       </dt>
@@ -189,7 +192,7 @@ function SubmissionRow({ submission }: SubmissionRowProps) {
   return (
     <Link
       to={`/questions/${submission.question.id}`}
-      className="group rounded-lg border border-gray-200 bg-white p-4 transition hover:border-blue-300 hover:bg-blue-50/40 dark:border-gray-800 dark:bg-gray-900 dark:hover:border-blue-500 dark:hover:bg-blue-500/5"
+      className="group rounded-xl border border-gray-200 bg-white p-4 transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md dark:border-gray-800 dark:bg-gray-900 dark:hover:border-blue-500"
     >
       <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start">
         <div className="min-w-0">
@@ -251,7 +254,7 @@ function Avatar({ contributor }: AvatarProps) {
   }
 
   return (
-    <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-blue-100 text-lg font-bold text-blue-700 dark:bg-blue-500/20 dark:text-blue-300">
+    <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 text-lg font-bold text-white">
       {contributor.name[0]?.toUpperCase() ?? "?"}
     </div>
   );

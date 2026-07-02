@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useContributors, useFilterOptions, useQuestions } from "../hooks/queries";
-import { SearchableSelect } from "../components/ui/SearchableSelect";
-import type { Contributor, SelectOption } from "../types/api";
+import type { Contributor } from "../types/api";
 
 const EMPTY_FILTERS = {
   page: 1,
@@ -53,32 +52,6 @@ export default function Home() {
 /* --------------------------------- Hero --------------------------------- */
 
 function Hero() {
-  const navigate = useNavigate();
-  const { data: options } = useFilterOptions();
-  const [departmentId, setDepartmentId] = useState("");
-  const [courseId, setCourseId] = useState("");
-
-  const departments = options?.departments ?? [];
-  const courses = options?.courses ?? [];
-  const disabled = !options;
-
-  const departmentOptions: SelectOption[] = departments.map((d) => ({
-    value: String(d.id),
-    label: d.name,
-  }));
-  const courseOptions: SelectOption[] = (
-    departmentId
-      ? courses.filter((c) => c.departmentId === Number(departmentId))
-      : courses
-  ).map((c) => ({ value: String(c.id), label: c.name }));
-
-  function search() {
-    const params = new URLSearchParams();
-    if (departmentId) params.set("departmentId", departmentId);
-    if (courseId) params.set("courseId", courseId);
-    navigate(`/questions${params.toString() ? `?${params}` : ""}`);
-  }
-
   return (
     <section className="relative isolate overflow-hidden">
       <div className="hero-glow absolute inset-0 -z-10" aria-hidden="true" />
@@ -111,65 +84,23 @@ function Hero() {
           type — then read every paper right in your browser.
         </p>
 
-        {/* Search-first entry point */}
         <div
-          className="animate-fade-up mx-auto mt-9 max-w-2xl rounded-2xl border border-gray-200 bg-white/80 p-2.5 shadow-sm backdrop-blur dark:border-gray-800 dark:bg-gray-900/70"
+          className="animate-fade-up mt-9 flex flex-wrap justify-center gap-3"
           style={{ animationDelay: "180ms" }}
         >
-          <div className="grid gap-2 sm:grid-cols-[1fr_1fr_auto]">
-            <div className="text-left">
-              <span id="hero-dept-label" className="sr-only">
-                Department
-              </span>
-              <SearchableSelect
-                id="hero-dept"
-                label="Department"
-                options={departmentOptions}
-                value={departmentId}
-                onChange={(v) => {
-                  setDepartmentId(v);
-                  setCourseId("");
-                }}
-                placeholder="Department"
-                disabled={disabled}
-              />
-            </div>
-            <div className="text-left">
-              <span id="hero-course-label" className="sr-only">
-                Course
-              </span>
-              <SearchableSelect
-                id="hero-course"
-                label="Course"
-                options={courseOptions}
-                value={courseId}
-                onChange={setCourseId}
-                placeholder="Course"
-                disabled={disabled}
-              />
-            </div>
-            <button
-              onClick={search}
-              className="flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700 active:scale-[0.98]"
-            >
-              <SearchIcon />
-              Find papers
-            </button>
-          </div>
-        </div>
-
-        <p
-          className="animate-fade-up mt-4 text-sm text-gray-500 dark:text-gray-400"
-          style={{ animationDelay: "220ms" }}
-        >
-          or{" "}
           <Link
             to="/questions"
-            className="font-semibold text-blue-600 hover:underline dark:text-blue-400"
+            className="rounded-lg bg-blue-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-blue-700 active:scale-[0.98]"
           >
-            browse the full archive
+            Browse questions
           </Link>
-        </p>
+          <Link
+            to="/submissions/manual/new"
+            className="rounded-lg border border-gray-300 px-6 py-3 text-sm font-semibold transition hover:bg-gray-50 active:scale-[0.98] dark:border-gray-700 dark:hover:bg-gray-900"
+          >
+            Contribute a paper
+          </Link>
+        </div>
       </div>
     </section>
   );
@@ -456,15 +387,6 @@ function SeeAll({ to, label }: { to: string; label: string }) {
     >
       {label} →
     </Link>
-  );
-}
-
-function SearchIcon() {
-  return (
-    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
-      <circle cx="11" cy="11" r="7" />
-      <path strokeLinecap="round" d="m20 20-3.5-3.5" />
-    </svg>
   );
 }
 
