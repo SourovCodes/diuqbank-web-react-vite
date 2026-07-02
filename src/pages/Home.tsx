@@ -392,12 +392,20 @@ function SeeAll({ to, label }: { to: string; label: string }) {
 
 // Counts up to `value` once it arrives; respects reduced-motion. Shows "—" while loading.
 function CountUp({ value }: { value?: number }) {
-  const [display, setDisplay] = useState(0);
-  const started = useRef(false);
+  const [display, setDisplay] = useState(() =>
+    typeof value === "number" ? value : 0
+  );
+  const hasDisplayedValue = useRef(typeof value === "number");
 
   useEffect(() => {
-    if (typeof value !== "number" || started.current) return;
-    started.current = true;
+    if (typeof value !== "number") return;
+
+    if (hasDisplayedValue.current) {
+      setDisplay(value);
+      return;
+    }
+
+    hasDisplayedValue.current = true;
 
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       setDisplay(value);
