@@ -5,25 +5,45 @@ import { createManualSubmission } from "../api";
 import { useFilterOptions } from "../hooks/queries";
 import { Button, Field, inputClass } from "../components/ui/form";
 import { Card, CardTitle } from "../components/ui/Card";
-
-const MAX_PDF_BYTES = 20 * 1024 * 1024;
-
-const steps = [
-  "You upload the paper and its details.",
-  "A reviewer checks it for quality and accuracy.",
-  "Once approved, it's published and credited to you.",
-];
+import { CreatableSelect } from "../components/ui/CreatableSelect";
+import { SearchableSelect } from "../components/ui/SearchableSelect";
+import { FileUpload } from "../components/ui/FileUpload";
 
 export default function ManualSubmissionCreate() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { data: options } = useFilterOptions();
-  const [pdf, setPdf] = useState<File | null>(null);
-  const [fileError, setFileError] = useState<string | null>(null);
+
+  const [departmentName, setDepartmentName] = useState("");
+  const [departmentShortName, setDepartmentShortName] = useState("");
+  const [courseName, setCourseName] = useState("");
+  const [semesterName, setSemesterName] = useState("");
+  const [examTypeName, setExamTypeName] = useState("");
+  const [note, setNote] = useState("");
+  const [file, setFile] = useState<File | null>(null);
 
   useEffect(() => {
     document.title = "New submission | DIUQBank";
   }, []);
+
+  // When the typed department isn't in the catalogue we ask for its short name;
+  // otherwise we derive it and scope the course list to that department.
+  const matchedDept = options?.departments.find(
+    (d) => d.name.trim().toLowerCase() === departmentName.trim().toLowerCase()
+  );
+  const isCustomDept = departmentName.trim() !== "" && !matchedDept;
+  const visibleCourses = matchedDept
+    ? (options?.courses.filter((c) => c.departmentId === matchedDept.id) ?? [])
+    : [];
+  const deptShortName = matchedDept?.shortName ?? departmentShortName.trim();
+
+  const isValid =
+    !!file &&
+    !!departmentName.trim() &&
+    (!isCustomDept || !!departmentShortName.trim()) &&
+    !!courseName.trim() &&
+    !!semesterName.trim() &&
+    !!examTypeName;
 
   const create = useMutation({
     mutationFn: (form: FormData) => createManualSubmission(form),
@@ -33,14 +53,23 @@ export default function ManualSubmissionCreate() {
     },
   });
 
+  function handleDeptChange(name: string) {
+    setDepartmentName(name);
+    setDepartmentShortName("");
+    setCourseName("");
+  }
+
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (!pdf) {
-      setFileError("A PDF file is required.");
-      return;
-    }
-    const form = new FormData(e.currentTarget);
-    form.set("pdf", pdf);
+    if (!isValid || !file) return;
+    const form = new FormData();
+    form.set("pdf", file);
+    form.set("departmentName", departmentName.trim());
+    form.set("departmentShortName", deptShortName);
+    form.set("courseName", courseName.trim());
+    form.set("semesterName", semesterName.trim());
+    form.set("examTypeName", examTypeName);
+    if (note.trim()) form.set("note", note.trim());
     create.mutate(form);
   }
 
@@ -63,120 +92,106 @@ export default function ManualSubmissionCreate() {
         </p>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
-        <Card className="p-6">
-          <form className="space-y-5" onSubmit={handleSubmit}>
-            <Field label="Question paper (PDF)" htmlFor="pdf" hint="Max 20 MB.">
+      <form className="space-y-5" onSubmit={handleSubmit}>
+        <Card className="space-y-4 p-6">
+          <CardTitle>Question details</CardTitle>
+
+          <Field label="Department" htmlFor="departmentName">
+            <CreatableSelect
+              id="departmentName"
+              options={
+                options?.departments.map((d) => ({
+                  value: d.name,
+                  label: `${d.name} (${d.shortName})`,
+                })) ?? []
+              }
+              value={departmentName}
+              onChange={handleDeptChange}
+              placeholder="Select or type a department"
+            />
+          </Field>
+
+          {isCustomDept && (
+            <Field
+              label="Department short name"
+              htmlFor="departmentShortName"
+              hint="This department is new — give its abbreviation."
+            >
               <input
-                id="pdf"
-                name="pdf"
-                type="file"
-                accept="application/pdf"
-                required
+                id="departmentShortName"
                 className={inputClass}
-                onChange={(e) => {
-                  const file = e.target.files?.[0] ?? null;
-                  if (file && file.size > MAX_PDF_BYTES) {
-                    setFileError("PDF exceeds the 20 MB limit.");
-                    setPdf(null);
-                  } else {
-                    setFileError(null);
-                    setPdf(file);
-                  }
-                }}
+                value={departmentShortName}
+                onChange={(e) => setDepartmentShortName(e.target.value)}
+                placeholder="e.g. CSE"
               />
-              {fileError && (
-                <p className="mt-1 text-xs text-red-600 dark:text-red-400">{fileError}</p>
-              )}
             </Field>
+          )}
 
-            <div className="grid gap-5 sm:grid-cols-2">
-              <Field label="Department" htmlFor="departmentName">
-                <input id="departmentName" name="departmentName" list="departments" required className={inputClass} placeholder="Computer Science and Engineering" />
-              </Field>
-              <Field label="Department short name" htmlFor="departmentShortName">
-                <input id="departmentShortName" name="departmentShortName" list="departmentShorts" required className={inputClass} placeholder="CSE" />
-              </Field>
-            </div>
+          <Field label="Course" htmlFor="courseName">
+            <CreatableSelect
+              id="courseName"
+              options={visibleCourses.map((c) => ({ value: c.name, label: c.name }))}
+              value={courseName}
+              onChange={setCourseName}
+              placeholder={
+                departmentName.trim() ? "Select or type a course" : "Select a department first"
+              }
+              disabled={!departmentName.trim()}
+            />
+          </Field>
 
-            <Field label="Course" htmlFor="courseName">
-              <input id="courseName" name="courseName" list="courses" required className={inputClass} placeholder="Data Structures" />
+          <div className="grid gap-5 sm:grid-cols-2">
+            <Field label="Semester" htmlFor="semesterName">
+              <CreatableSelect
+                id="semesterName"
+                options={options?.semesters.map((s) => ({ value: s.name, label: s.name })) ?? []}
+                value={semesterName}
+                onChange={setSemesterName}
+                placeholder="Select or type a semester"
+              />
             </Field>
-
-            <div className="grid gap-5 sm:grid-cols-2">
-              <Field label="Semester" htmlFor="semesterName">
-                <input id="semesterName" name="semesterName" list="semesters" required className={inputClass} placeholder="Summer 2026" />
-              </Field>
-              <Field label="Exam type" htmlFor="examTypeName">
-                <input id="examTypeName" name="examTypeName" list="examTypes" required className={inputClass} placeholder="Midterm" />
-              </Field>
-            </div>
-
-            <Field label="Note (optional)" htmlFor="note">
-              <textarea id="note" name="note" rows={3} className={inputClass} placeholder="Anything the reviewer should know." />
+            <Field label="Exam type" htmlFor="examType">
+              <SearchableSelect
+                id="examType"
+                label="Exam type"
+                options={options?.examTypes.map((t) => ({ value: t.name, label: t.name })) ?? []}
+                value={examTypeName}
+                onChange={setExamTypeName}
+                placeholder="Select type"
+              />
             </Field>
+          </div>
 
-            {/* Suggestions from the existing catalogue so names stay consistent. */}
-            <datalist id="departments">
-              {options?.departments.map((d) => <option key={d.id} value={d.name} />)}
-            </datalist>
-            <datalist id="departmentShorts">
-              {options?.departments.map((d) => <option key={d.id} value={d.shortName} />)}
-            </datalist>
-            <datalist id="courses">
-              {options?.courses.map((c) => <option key={c.id} value={c.name} />)}
-            </datalist>
-            <datalist id="semesters">
-              {options?.semesters.map((s) => <option key={s.id} value={s.name} />)}
-            </datalist>
-            <datalist id="examTypes">
-              {options?.examTypes.map((t) => <option key={t.id} value={t.name} />)}
-            </datalist>
-
-            {create.isError && (
-              <p className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">
-                {(create.error as Error).message}
-              </p>
-            )}
-
-            <div className="border-t border-gray-100 pt-5 dark:border-gray-800">
-              <Button type="submit" loading={create.isPending}>
-                Submit for review
-              </Button>
-            </div>
-          </form>
+          <Field label="Note (optional)" htmlFor="note">
+            <textarea
+              id="note"
+              className={inputClass}
+              rows={3}
+              maxLength={1000}
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              placeholder="Anything the reviewer should know."
+            />
+          </Field>
         </Card>
 
-        <aside className="space-y-4">
-          <Card className="p-5">
-            <CardTitle>How review works</CardTitle>
-            <ol className="mt-4 space-y-4">
-              {steps.map((step, i) => (
-                <li key={i} className="flex gap-3">
-                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 text-xs font-bold text-white">
-                    {i + 1}
-                  </span>
-                  <span className="text-sm leading-6 text-gray-600 dark:text-gray-300">
-                    {step}
-                  </span>
-                </li>
-              ))}
-            </ol>
-          </Card>
-          <Card className="p-5">
-            <CardTitle>In a hurry?</CardTitle>
-            <p className="mt-3 text-sm leading-6 text-gray-600 dark:text-gray-300">
-              Let the AI fill in the details for you — just upload a PDF.
-            </p>
-            <Link
-              to="/submissions/auto/new"
-              className="mt-3 inline-flex text-sm font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400"
-            >
-              Try AI-assisted upload →
-            </Link>
-          </Card>
-        </aside>
-      </div>
+        <Card className="p-6">
+          <CardTitle>Question paper (PDF)</CardTitle>
+          <div className="mt-4">
+            <FileUpload file={file} onChange={setFile} disabled={create.isPending} />
+          </div>
+        </Card>
+
+        {create.isError && (
+          <p className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">
+            {(create.error as Error).message}
+          </p>
+        )}
+
+        <Button type="submit" className="w-full" loading={create.isPending} disabled={!isValid}>
+          Submit for review
+        </Button>
+      </form>
     </div>
   );
 }
