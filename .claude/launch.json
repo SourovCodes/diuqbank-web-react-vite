@@ -21,6 +21,13 @@
       "runtimeArgs": ["run", "dev", "--", "--port", "5175"],
       "port": 5175,
       "autoPort": false
+    },
+    {
+      "name": "dev-alt3",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--", "--port", "5176"],
+      "port": 5176,
+      "autoPort": false
     }
   ]
 }

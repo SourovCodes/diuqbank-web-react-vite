@@ -797,7 +797,7 @@ export interface paths {
          * Count a submission view
          * @description **Access:** `Public` — No authentication required.
          *
-         *     Records one view for a submission. Requires a Cloudflare Turnstile token in the JSON body `{ token }` (single-use — obtain a fresh one per view). Render the Turnstile widget with **site key `0x4AAAAAADvF7K_JpwpPHfiE`** to obtain the token. The view is buffered in Analytics Engine and flushed into `viewCount` by a cron every ~15 minutes, so the increment is not reflected in reads immediately. No auth and no rate limiting.
+         *     Records one view for a submission. Requires a Google reCAPTCHA v3 token in the JSON body `{ token }` (single-use, ~2-minute expiry — obtain a fresh one per view). Call `grecaptcha.execute()` with **site key `6LfNQUMtAAAAALqjSZZS8oIFmJQXA-xAv-z03KvH`** to obtain the token. The view is buffered in Analytics Engine and flushed into `viewCount` by a cron every ~15 minutes, so the increment is not reflected in reads immediately. No auth and no rate limiting.
          */
         post: {
             parameters: {
@@ -831,7 +831,7 @@ export interface paths {
                         "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
-                /** @description Turnstile verification failed */
+                /** @description reCAPTCHA verification failed */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -5886,7 +5886,7 @@ export interface components {
             by?: number;
         };
         SubmissionView: {
-            /** @description A single-use Cloudflare Turnstile token. Render the widget with site key `0x4AAAAAADvF7K_JpwpPHfiE` and send a fresh token on every view. */
+            /** @description A single-use Google reCAPTCHA v3 token. Call `grecaptcha.execute()` with site key `6LfNQUMtAAAAALqjSZZS8oIFmJQXA-xAv-z03KvH` and send a fresh token on every view. */
             token: string;
         };
         UpdateUser: {

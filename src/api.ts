@@ -144,8 +144,8 @@ export const getSubmissions = (id: string): Promise<QuestionSubmissions> =>
   get(`/questions/${id}/submissions`);
 
 /**
- * Records one view for a submission. `token` is a single-use Cloudflare
- * Turnstile token; the increment is flushed into `viewCount` by a backend
+ * Records one view for a submission. `token` is a single-use Google
+ * reCAPTCHA v3 token; the increment is flushed into `viewCount` by a backend
  * cron, so it is not reflected in reads immediately.
  */
 export const recordSubmissionView = (
