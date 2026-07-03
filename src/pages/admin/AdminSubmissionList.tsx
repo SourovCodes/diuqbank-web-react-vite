@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   deleteAdminSubmission,
+  incrementSubmissionViews,
   replaceSubmissionPdf,
   updateAdminSubmission,
 } from "../../api";
@@ -65,6 +66,15 @@ export default function AdminSubmissionList() {
       cell: (s) => (
         <span className="whitespace-nowrap tabular-nums text-gray-500 dark:text-gray-400">
           {formatBytes(s.fileSize)}
+        </span>
+      ),
+      className: "text-right",
+    },
+    {
+      header: "Views",
+      cell: (s) => (
+        <span className="whitespace-nowrap tabular-nums text-gray-500 dark:text-gray-400">
+          {s.viewCount}
         </span>
       ),
       className: "text-right",
@@ -150,10 +160,20 @@ function ManageSubmissionModal({
     watermarkStatus: submission.watermarkStatus,
   });
   const [pdf, setPdf] = useState<File | null>(null);
+  const [viewsToAdd, setViewsToAdd] = useState("1");
 
   function invalidate() {
     queryClient.invalidateQueries({ queryKey: ["admin", "submissions"] });
   }
+
+  const viewsToAddNumber = Number(viewsToAdd);
+  const viewsToAddValid =
+    Number.isInteger(viewsToAddNumber) && viewsToAddNumber > 0;
+
+  const addViews = useMutation({
+    mutationFn: () => incrementSubmissionViews(submission.id, viewsToAddNumber),
+    onSuccess: invalidate,
+  });
 
   const save = useMutation({
     mutationFn: () =>
@@ -252,6 +272,43 @@ function ManageSubmissionModal({
             <option value="failed">failed</option>
           </select>
         </Field>
+
+        <div className="border-t border-gray-100 pt-3 dark:border-gray-800">
+          <Field
+            label={`Add views (currently ${submission.viewCount})`}
+            htmlFor="sub-views"
+          >
+            <div className="flex gap-2">
+              <input
+                id="sub-views"
+                type="number"
+                min={1}
+                step={1}
+                value={viewsToAdd}
+                onChange={(e) => setViewsToAdd(e.target.value)}
+                className={inputClass}
+              />
+              <Button
+                variant="secondary"
+                disabled={!viewsToAddValid}
+                loading={addViews.isPending}
+                onClick={() => addViews.mutate()}
+              >
+                Add
+              </Button>
+            </div>
+          </Field>
+          {addViews.isError && (
+            <p className="mt-1 text-xs text-red-600 dark:text-red-400">
+              {(addViews.error as Error).message}
+            </p>
+          )}
+          {addViews.isSuccess && (
+            <p className="mt-1 text-xs text-green-600 dark:text-green-400">
+              Views added.
+            </p>
+          )}
+        </div>
 
         <div className="border-t border-gray-100 pt-3 dark:border-gray-800">
           <Field label="Replace PDF">

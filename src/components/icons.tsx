@@ -1,3 +1,7 @@
+// This module is an icon set built from a single `make` factory. Every export
+// is an icon, so React Fast Refresh's "only export components" boundary doesn't
+// apply here — the factory would otherwise be flagged as a non-component export.
+/* eslint-disable react/only-export-components */
 import type { ComponentType, ReactNode, SVGProps } from "react";
 
 export type Icon = ComponentType<SVGProps<SVGSVGElement>>;

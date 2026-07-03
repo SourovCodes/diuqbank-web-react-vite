@@ -4,8 +4,9 @@ import { useQuestion, useSubmissions } from "../hooks/queries";
 import { Badge } from "../components/ui/Badge";
 import { StatusPage } from "../components/ui/StatusPage";
 import { PdfPreview } from "../components/submissions/SubmissionParts";
+import { SubmissionViewTracker } from "../components/submissions/SubmissionViewTracker";
 import { cx } from "../lib/cx";
-import { formatBytes, formatDate } from "../lib/format";
+import { formatBytes, formatCount, formatDate } from "../lib/format";
 import type { QuestionDetail as QuestionDetailData } from "../types/api";
 
 type QuestionDetailLocationState = {
@@ -76,11 +77,15 @@ export default function QuestionDetail() {
         <h1 className="max-w-4xl text-2xl font-bold leading-tight tracking-tight text-gray-900 dark:text-gray-100 sm:text-3xl">
           {question.title}
         </h1>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Badge label={question.department.name} variant="blue" />
           <Badge label={question.course.name} variant="gray" />
           <Badge label={question.semester.name} variant="gray" />
           <Badge label={question.examType.name} variant="green" />
+          <span className="text-sm text-gray-500 dark:text-gray-400">
+            {formatCount(question.viewCount)} view
+            {question.viewCount !== 1 ? "s" : ""}
+          </span>
         </div>
       </div>
 
@@ -93,11 +98,17 @@ export default function QuestionDetail() {
               </p>
             </div>
           ) : selected?.pdfUrl ? (
-            <PdfPreview
-              key={selected.id}
-              url={selected.pdfUrl}
-              title="Question paper"
-            />
+            <>
+              <PdfPreview
+                key={selected.id}
+                url={selected.pdfUrl}
+                title="Question paper"
+              />
+              <SubmissionViewTracker
+                key={`view-${selected.id}`}
+                submissionId={selected.id}
+              />
+            </>
           ) : (
             <div className="pdf-frame flex items-center justify-center rounded-lg border border-dashed border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-900">
               <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -174,6 +185,7 @@ export default function QuestionDetail() {
                             </span>
                             <span className="mt-0.5 block text-xs text-gray-500 dark:text-gray-400">
                               {formatDate(sub.createdAt)}
+                              {` · ${formatCount(sub.viewCount)} view${sub.viewCount !== 1 ? "s" : ""}`}
                               {!canView && " · No PDF"}
                             </span>
                           </span>
@@ -202,6 +214,7 @@ export default function QuestionDetail() {
                   <dl className="space-y-1.5 text-sm">
                     <Row label="Date" value={formatDate(selected.createdAt)} />
                     <Row label="File size" value={formatBytes(selected.fileSize)} />
+                    <Row label="Views" value={formatCount(selected.viewCount)} />
                     {selected.section && <Row label="Section" value={selected.section} />}
                     {selected.batch && <Row label="Batch" value={selected.batch} />}
                   </dl>

@@ -784,6 +784,79 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/submissions/{id}/views": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Count a submission view
+         * @description **Access:** `Public` — No authentication required.
+         *
+         *     Records one view for a submission. Requires a Cloudflare Turnstile token in the JSON body `{ token }` (single-use — obtain a fresh one per view). Render the Turnstile widget with **site key `0x4AAAAAADvF7K_JpwpPHfiE`** to obtain the token. The view is buffered in Analytics Engine and flushed into `viewCount` by a cron every ~15 minutes, so the increment is not reflected in reads immediately. No auth and no rate limiting.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description Submission id. */
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SubmissionView"];
+                };
+            };
+            responses: {
+                /** @description Accepted — the view was buffered */
+                202: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Validation failed (missing or empty `token`) */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Turnstile verification failed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Submission not found (invalid id) */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/manual-submissions": {
         parameters: {
             query?: never;
@@ -3808,6 +3881,90 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admin/submissions/{id}/views": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Increment a submission's view count
+         * @description **Access:** `Admin` — Requires a bearer token from an account with `role: "admin"`.
+         *
+         *     Increments the submission's `viewCount`. Optional JSON body `{ by?: number }` (positive integer, default 1) adds several views at once. The parent question's summed `viewCount` is updated automatically at the database level.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description Submission id. */
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["IncrementSubmissionView"];
+                };
+            };
+            responses: {
+                /** @description Updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AdminSubmission"];
+                    };
+                };
+                /** @description Validation failed (`by` must be a positive integer) */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Missing or invalid bearer token */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Admin access required */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+                /** @description Resource not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admin/manual-submissions": {
         parameters: {
             query?: never;
@@ -5343,6 +5500,8 @@ export interface components {
             batch: string | null;
             /** @description Size of the PDF in bytes. */
             fileSize: number;
+            /** @description Number of times this submission has been viewed. */
+            viewCount: number;
             /** @description Unix epoch seconds (UTC) */
             createdAt: number;
             /** @description Absolute URL to the submission PDF, served by `GET /files/:key`. */
@@ -5378,6 +5537,8 @@ export interface components {
                 batch: string | null;
                 /** @description Size of the PDF in bytes. */
                 fileSize: number;
+                /** @description Number of times this submission has been viewed. */
+                viewCount: number;
                 /** @description Unix epoch seconds (UTC) */
                 createdAt: number;
                 /** @description Absolute URL to the submission PDF, served by `GET /files/:key`. */
@@ -5395,6 +5556,8 @@ export interface components {
             /** @description Human-readable label, e.g. "Data Structures (CSE), Summer 26, Quiz". */
             title: string;
             submissionCount: number;
+            /** @description Total views across all of this question's submissions. */
+            viewCount: number;
             department: {
                 id: number;
                 name: string;
@@ -5420,6 +5583,8 @@ export interface components {
                 /** @description Human-readable label, e.g. "Data Structures (CSE), Summer 26, Quiz". */
                 title: string;
                 submissionCount: number;
+                /** @description Total views across all of this question's submissions. */
+                viewCount: number;
                 department: {
                     id: number;
                     name: string;
@@ -5452,6 +5617,8 @@ export interface components {
             batch: string | null;
             /** @description Size of the PDF in bytes. */
             fileSize: number;
+            /** @description Number of times this submission has been viewed. */
+            viewCount: number;
             /** @description Unix epoch seconds (UTC) */
             createdAt: number;
             /** @description Absolute URL to the submission PDF, served by `GET /files/:key`. */
@@ -5468,6 +5635,8 @@ export interface components {
             /** @description Human-readable label, e.g. "Data Structures (CSE), Summer 26, Quiz". */
             title: string;
             submissionCount: number;
+            /** @description Total views across all of this question's submissions. */
+            viewCount: number;
             department: {
                 id: number;
                 name: string;
@@ -5494,6 +5663,8 @@ export interface components {
                 batch: string | null;
                 /** @description Size of the PDF in bytes. */
                 fileSize: number;
+                /** @description Number of times this submission has been viewed. */
+                viewCount: number;
                 /** @description Unix epoch seconds (UTC) */
                 createdAt: number;
                 /** @description Absolute URL to the submission PDF, served by `GET /files/:key`. */
@@ -5711,6 +5882,13 @@ export interface components {
             /** @enum {string} */
             watermarkStatus?: "awaiting" | "completed" | "failed";
         };
+        IncrementSubmissionView: {
+            by?: number;
+        };
+        SubmissionView: {
+            /** @description A single-use Cloudflare Turnstile token. Render the widget with site key `0x4AAAAAADvF7K_JpwpPHfiE` and send a fresh token on every view. */
+            token: string;
+        };
         UpdateUser: {
             name?: string;
             username?: string;
@@ -5797,6 +5975,8 @@ export interface components {
             semesterId: number;
             examTypeId: number;
             submissionCount: number;
+            /** @description Total views across all of this question's submissions. */
+            viewCount: number;
             department: {
                 id: number;
                 name: string;
@@ -5825,6 +6005,8 @@ export interface components {
                 semesterId: number;
                 examTypeId: number;
                 submissionCount: number;
+                /** @description Total views across all of this question's submissions. */
+                viewCount: number;
                 department: {
                     id: number;
                     name: string;
@@ -5867,6 +6049,8 @@ export interface components {
             batch: string | null;
             /** @description Size of the PDF in bytes. */
             fileSize: number;
+            /** @description Number of times this submission has been viewed. */
+            viewCount: number;
             /** @enum {string} */
             watermarkStatus: "awaiting" | "completed" | "failed";
             watermarkError: string | null;
@@ -5894,6 +6078,8 @@ export interface components {
                 batch: string | null;
                 /** @description Size of the PDF in bytes. */
                 fileSize: number;
+                /** @description Number of times this submission has been viewed. */
+                viewCount: number;
                 /** @enum {string} */
                 watermarkStatus: "awaiting" | "completed" | "failed";
                 watermarkError: string | null;

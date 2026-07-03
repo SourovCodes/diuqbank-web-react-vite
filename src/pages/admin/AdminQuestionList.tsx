@@ -98,6 +98,11 @@ export default function AdminQuestionList() {
       className: "text-right",
     },
     {
+      header: "Views",
+      cell: (q) => <span className="tabular-nums">{q.viewCount}</span>,
+      className: "text-right",
+    },
+    {
       header: "",
       cell: (q) => (
         <button

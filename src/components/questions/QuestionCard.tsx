@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Badge } from "../ui/Badge";
+import { formatCount } from "../../lib/format";
 import type { Question } from "../../types/api";
 
 type QuestionCardProps = {
@@ -25,9 +26,15 @@ export function QuestionCard({ question }: QuestionCardProps) {
       </div>
 
       <div className="flex items-center justify-between gap-5 border-t border-gray-100 pt-3 text-xs sm:flex-col sm:items-end sm:border-t-0 sm:pt-0 dark:border-gray-800">
-        <span className="whitespace-nowrap font-semibold text-gray-700 dark:text-gray-300">
-          {question.submissionCount} submission
-          {question.submissionCount !== 1 ? "s" : ""}
+        <span className="flex items-center gap-3 sm:flex-col sm:items-end sm:gap-1">
+          <span className="whitespace-nowrap font-semibold text-gray-700 dark:text-gray-300">
+            {question.submissionCount} submission
+            {question.submissionCount !== 1 ? "s" : ""}
+          </span>
+          <span className="whitespace-nowrap text-gray-500 dark:text-gray-400">
+            {formatCount(question.viewCount)} view
+            {question.viewCount !== 1 ? "s" : ""}
+          </span>
         </span>
         <span className="font-semibold text-blue-600 group-hover:text-blue-700 dark:text-blue-400">
           View

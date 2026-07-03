@@ -107,7 +107,8 @@ async function request<T>(path: string, opts: RequestOptions = {}): Promise<T> {
     const message = await readErrorMessage(res);
     throw new Error(message || `${res.status} ${res.statusText}`);
   }
-  if (res.status === 204) return undefined as T;
+  // 202 (view buffered) and 204 responses have no body.
+  if (res.status === 202 || res.status === 204) return undefined as T;
   return res.json() as Promise<T>;
 }
 
@@ -141,6 +142,16 @@ export const getQuestion = (id: string): Promise<QuestionDetail> =>
 
 export const getSubmissions = (id: string): Promise<QuestionSubmissions> =>
   get(`/questions/${id}/submissions`);
+
+/**
+ * Records one view for a submission. `token` is a single-use Cloudflare
+ * Turnstile token; the increment is flushed into `viewCount` by a backend
+ * cron, so it is not reflected in reads immediately.
+ */
+export const recordSubmissionView = (
+  id: number,
+  token: string
+): Promise<void> => request(`/submissions/${id}/views`, { method: "POST", json: { token } });
 
 export const getFilterOptions = (): Promise<FilterOptions> =>
   get("/filter-options");
@@ -365,6 +376,11 @@ export const updateAdminSubmission = (
 
 export const deleteAdminSubmission = (id: number): Promise<void> =>
   del(`/admin/submissions/${id}`);
+
+export const incrementSubmissionViews = (
+  id: number,
+  by = 1
+): Promise<AdminSubmission> => post(`/admin/submissions/${id}/views`, { by });
 
 export const replaceSubmissionPdf = (
   id: number,

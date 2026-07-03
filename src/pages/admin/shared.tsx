@@ -31,6 +31,7 @@ export function AdminHeader({
 }
 
 /** Reads/writes the `page` query param, resetting to 1 whenever filters change. */
+// eslint-disable-next-line react/only-export-components -- shared admin hook, co-located with its components
 export function usePageParam() {
   const [searchParams, setSearchParams] = useSearchParams();
   const page = parsePositiveIntParam(searchParams, "page");
@@ -46,6 +47,7 @@ export function usePageParam() {
 }
 
 /** Debounce a rapidly-changing value (e.g. a search box). */
+// eslint-disable-next-line react/only-export-components -- shared admin hook, co-located with its components
 export function useDebouncedValue<T>(value: T, delay = 350): T {
   const [debounced, setDebounced] = useState(value);
   useEffect(() => {

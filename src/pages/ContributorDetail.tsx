@@ -9,7 +9,7 @@ import { SkeletonCard } from "../components/ui/Card";
 import { Pagination } from "../components/ui/Pagination";
 import { StatusPage } from "../components/ui/StatusPage";
 import { cx } from "../lib/cx";
-import { formatBytes, formatDate } from "../lib/format";
+import { formatBytes, formatCount, formatDate } from "../lib/format";
 import { parsePositiveIntParam } from "../lib/searchParams";
 import type {
   Contributor,
@@ -210,6 +210,10 @@ function SubmissionRow({ submission }: SubmissionRowProps) {
         <div className="flex flex-wrap items-center gap-3 text-xs text-gray-500 sm:justify-end dark:text-gray-400">
           <span>{formatDate(submission.createdAt)}</span>
           <span>{formatBytes(submission.fileSize)}</span>
+          <span>
+            {formatCount(submission.viewCount)} view
+            {submission.viewCount !== 1 ? "s" : ""}
+          </span>
           <span className="font-semibold text-blue-600 group-hover:text-blue-700 dark:text-blue-400">
             View
           </span>
