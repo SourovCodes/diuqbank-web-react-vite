@@ -41,6 +41,7 @@ import { RequireAdmin } from "./components/RequireAdmin";
 import { DashboardLayout } from "./components/DashboardLayout";
 import { AdminLayout } from "./components/AdminLayout";
 import { ThemeToggle } from "./components/ThemeToggle";
+import { TopLoader } from "./components/TopLoader";
 import { UserMenu } from "./components/UserMenu";
 import { useAuth } from "./auth";
 
@@ -182,6 +183,7 @@ function Footer() {
 function Layout() {
   return (
     <div className="flex min-h-screen flex-col bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100">
+      <TopLoader />
       <Navbar />
       <Outlet />
       <Footer />
