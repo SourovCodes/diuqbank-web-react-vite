@@ -23,10 +23,7 @@ export function PdfPreview({
 
   if (!url) {
     return (
-      <div
-        className="flex items-center justify-center rounded-lg border border-dashed border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-900"
-        style={{ minHeight: "440px" }}
-      >
+      <div className="pdf-frame flex items-center justify-center rounded-lg border border-dashed border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-900">
         <p className="text-sm text-gray-500 dark:text-gray-400">
           No PDF available.
         </p>
@@ -77,15 +74,15 @@ export function PdfPreview({
           </button>
         </div>
       </div>
+      {/* `flex-1` only in fullscreen: its flex-basis would override the
+          pdf-frame height in normal flow. */}
       <iframe
         src={url}
         title={title}
-        className="w-full flex-1 bg-white dark:bg-gray-900"
-        style={
-          isFull
-            ? undefined
-            : { height: "calc(100vh - 12rem)", minHeight: "520px" }
-        }
+        className={cx(
+          "w-full bg-white dark:bg-gray-900",
+          isFull ? "flex-1" : "pdf-frame"
+        )}
       />
     </div>
   );

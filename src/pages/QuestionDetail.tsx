@@ -13,12 +13,6 @@ type QuestionDetailLocationState = {
   question?: QuestionDetailData;
 };
 
-/** Matches the PdfPreview iframe height so loading → loaded doesn't jump. */
-const viewerPlaceholderStyle = {
-  height: "calc(100vh - 12rem)",
-  minHeight: "520px",
-} as const;
-
 export default function QuestionDetail() {
   const { id } = useParams();
   const location = useLocation();
@@ -109,10 +103,7 @@ export default function QuestionDetail() {
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
         <div className="min-w-0 flex-1">
           {isSubmissionsPending ? (
-            <div
-              className="flex items-center justify-center rounded-lg border border-dashed border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-900"
-              style={viewerPlaceholderStyle}
-            >
+            <div className="pdf-frame flex items-center justify-center rounded-lg border border-dashed border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-900">
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 Loading submissions...
               </p>
@@ -124,10 +115,7 @@ export default function QuestionDetail() {
               title="Question paper"
             />
           ) : (
-            <div
-              className="flex items-center justify-center rounded-lg border border-dashed border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-900"
-              style={viewerPlaceholderStyle}
-            >
+            <div className="pdf-frame flex items-center justify-center rounded-lg border border-dashed border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-900">
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 {isSubmissionsError
                   ? "Failed to load submissions."
