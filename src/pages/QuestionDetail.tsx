@@ -47,14 +47,7 @@ export default function QuestionDetail() {
         : "Question | DIUQBank";
   }, [isError, question?.title]);
 
-  if (isPending)
-    return (
-      <div className="container mx-auto flex-1 px-4 py-16">
-        <div className="rounded-lg border border-dashed border-gray-200 py-14 text-center text-sm text-gray-500 dark:border-gray-800 dark:text-gray-400">
-          Loading question...
-        </div>
-      </div>
-    );
+  if (isPending) return <QuestionDetailSkeleton />;
 
   if (isError || !question)
     return (
@@ -228,6 +221,44 @@ export default function QuestionDetail() {
             </div>
           </aside>
         )}
+      </div>
+    </main>
+  );
+}
+
+// Mirrors the loaded layout (title, badges, PDF frame, sidebar card) so the
+// page doesn't jump when the data arrives.
+function QuestionDetailSkeleton() {
+  return (
+    <main className="container mx-auto flex-1 animate-pulse px-4 py-10 sm:py-12">
+      <div className="mb-6 flex flex-col gap-3 border-b border-gray-200 pb-5 dark:border-gray-800">
+        <div className="h-8 w-2/3 max-w-xl rounded bg-gray-200 dark:bg-gray-800" />
+        <div className="flex flex-wrap gap-2">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="h-6 w-24 rounded-full bg-gray-200 dark:bg-gray-800" />
+          ))}
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
+        <div className="pdf-frame min-w-0 flex-1 rounded-lg bg-gray-100 dark:bg-gray-900" />
+        <aside className="w-full shrink-0 lg:w-80">
+          <div className="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 shrink-0 rounded-full bg-gray-200 dark:bg-gray-800" />
+              <div className="min-w-0 flex-1">
+                <div className="h-4 w-3/5 rounded bg-gray-200 dark:bg-gray-800" />
+                <div className="mt-1.5 h-3 w-2/5 rounded bg-gray-200 dark:bg-gray-800" />
+              </div>
+            </div>
+            <div className="mt-5 space-y-2.5">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="h-3.5 rounded bg-gray-200 dark:bg-gray-800" />
+              ))}
+            </div>
+            <div className="mt-5 h-9 rounded-lg bg-gray-200 dark:bg-gray-800" />
+          </div>
+        </aside>
       </div>
     </main>
   );
