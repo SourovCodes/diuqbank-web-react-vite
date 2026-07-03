@@ -81,7 +81,11 @@ export function PdfPreview({
         src={url}
         title={title}
         className="w-full flex-1 bg-white dark:bg-gray-900"
-        style={isFull ? undefined : { height: "calc(100vh - 300px)", minHeight: "440px" }}
+        style={
+          isFull
+            ? undefined
+            : { height: "calc(100vh - 12rem)", minHeight: "520px" }
+        }
       />
     </div>
   );

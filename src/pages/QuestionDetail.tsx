@@ -4,6 +4,7 @@ import { useQuestion, useSubmissions } from "../hooks/queries";
 import { Badge } from "../components/ui/Badge";
 import { StatusPage } from "../components/ui/StatusPage";
 import { PdfPreview } from "../components/submissions/SubmissionParts";
+import { ArrowLeftIcon } from "../components/icons";
 import { cx } from "../lib/cx";
 import { formatBytes, formatDate } from "../lib/format";
 import type { QuestionDetail as QuestionDetailData } from "../types/api";
@@ -11,6 +12,12 @@ import type { QuestionDetail as QuestionDetailData } from "../types/api";
 type QuestionDetailLocationState = {
   question?: QuestionDetailData;
 };
+
+/** Matches the PdfPreview iframe height so loading → loaded doesn't jump. */
+const viewerPlaceholderStyle = {
+  height: "calc(100vh - 12rem)",
+  minHeight: "520px",
+} as const;
 
 export default function QuestionDetail() {
   const { id } = useParams();
@@ -81,12 +88,13 @@ export default function QuestionDetail() {
     <main className="container mx-auto flex-1 px-4 py-10 sm:py-12">
       <Link
         to="/questions"
-        className="mb-6 inline-flex text-sm font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400"
+        className="mb-5 inline-flex items-center gap-1.5 text-sm font-medium text-gray-500 transition hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
       >
+        <ArrowLeftIcon className="h-3.5 w-3.5" />
         Back to questions
       </Link>
 
-      <div className="mb-7 flex flex-col gap-4 border-b border-gray-200 pb-6 dark:border-gray-800">
+      <div className="mb-6 flex flex-col gap-3 border-b border-gray-200 pb-5 dark:border-gray-800">
         <h1 className="max-w-4xl text-2xl font-bold leading-tight tracking-tight text-gray-900 dark:text-gray-100 sm:text-3xl">
           {question.title}
         </h1>
@@ -103,7 +111,7 @@ export default function QuestionDetail() {
           {isSubmissionsPending ? (
             <div
               className="flex items-center justify-center rounded-lg border border-dashed border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-900"
-              style={{ minHeight: "560px" }}
+              style={viewerPlaceholderStyle}
             >
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 Loading submissions...
@@ -118,7 +126,7 @@ export default function QuestionDetail() {
           ) : (
             <div
               className="flex items-center justify-center rounded-lg border border-dashed border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-900"
-              style={{ minHeight: "560px" }}
+              style={viewerPlaceholderStyle}
             >
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 {isSubmissionsError
@@ -160,6 +168,7 @@ export default function QuestionDetail() {
                     {submissions.map((sub) => {
                       const canView = !!sub.pdfUrl;
                       const isSelected = sub.id === selectedId;
+                      const name = sub.contributor?.name ?? "Anonymous";
                       return (
                         <button
                           key={sub.id}
@@ -167,7 +176,7 @@ export default function QuestionDetail() {
                           disabled={!canView}
                           onClick={() => canView && setSelectedId(sub.id)}
                           className={cx(
-                            "w-full rounded-lg border p-3 text-left transition",
+                            "flex w-full items-center gap-3 rounded-lg border p-3 text-left transition",
                             canView
                               ? "cursor-pointer hover:border-blue-300"
                               : "cursor-not-allowed opacity-50",
@@ -176,12 +185,26 @@ export default function QuestionDetail() {
                               : "border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-950"
                           )}
                         >
-                          <p className="truncate text-sm font-semibold text-gray-900 dark:text-gray-100">
-                            {sub.contributor?.name ?? "Anonymous"}
-                          </p>
-                          <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                            {formatDate(sub.createdAt)}
-                          </p>
+                          {sub.contributor?.image ? (
+                            <img
+                              src={sub.contributor.image}
+                              alt=""
+                              className="h-8 w-8 shrink-0 rounded-full object-cover"
+                            />
+                          ) : (
+                            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 text-xs font-bold text-white">
+                              {name[0]?.toUpperCase() ?? "?"}
+                            </span>
+                          )}
+                          <span className="min-w-0 flex-1">
+                            <span className="block truncate text-sm font-semibold text-gray-900 dark:text-gray-100">
+                              {name}
+                            </span>
+                            <span className="mt-0.5 block text-xs text-gray-500 dark:text-gray-400">
+                              {formatDate(sub.createdAt)}
+                              {!canView && " · No PDF"}
+                            </span>
+                          </span>
                         </button>
                       );
                     })}

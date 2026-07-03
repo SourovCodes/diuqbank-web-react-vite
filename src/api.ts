@@ -381,6 +381,13 @@ export const replaceSubmissionPdf = (
 type TaxonomyList = DepartmentList | CourseList | SemesterList | ExamTypeList;
 type TaxonomyItem = Department | Course | Semester | ExamType;
 
+/** `summary` is set on a real merge, `preview` when `dryRun: true`. */
+export type MergeResponse = {
+  keeper: TaxonomyItem;
+  summary?: MergeSummary;
+  preview?: MergeSummary;
+};
+
 const taxonomyApi = <List extends TaxonomyList, Item extends TaxonomyItem>(
   resource: string
 ) => ({
@@ -391,7 +398,7 @@ const taxonomyApi = <List extends TaxonomyList, Item extends TaxonomyItem>(
   update: (id: number, body: Record<string, unknown>): Promise<Item> =>
     patch(`/admin/${resource}/${id}`, body),
   remove: (id: number): Promise<void> => del(`/admin/${resource}/${id}`),
-  merge: (body: MergeRequest): Promise<MergeSummary> =>
+  merge: (body: MergeRequest): Promise<MergeResponse> =>
     post(`/admin/${resource}/merge`, body),
 });
 

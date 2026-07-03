@@ -5,7 +5,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import type { TaxonomyApi } from "../../api";
-import type { SelectOption } from "../../types/api";
+import type { MergeSummary, SelectOption } from "../../types/api";
 import { useTaxonomy } from "../../hooks/adminQueries";
 import { useFilterOptions } from "../../hooks/queries";
 import { DataTable, type Column } from "../../components/admin/DataTable";
@@ -335,6 +335,41 @@ function TaxonomyFormModal({
   );
 }
 
+/** Impact lines rendered from a dry-run `MergeSummary`. */
+function mergeImpactLines(
+  preview: MergeSummary,
+  singular: string
+): { count: number; text: string }[] {
+  const plural = (n: number, word: string) => (n === 1 ? word : `${word}s`);
+  const lines = [
+    {
+      count: preview.questionsCombined,
+      text: `duplicate ${plural(preview.questionsCombined, "question")} combined`,
+    },
+    {
+      count: preview.submissionsMoved,
+      text: `published ${plural(preview.submissionsMoved, "submission")} moved`,
+    },
+    {
+      count: preview.manualSubmissionsMoved,
+      text: `manual ${plural(preview.manualSubmissionsMoved, "submission")} moved`,
+    },
+    ...(preview.coursesMerged !== undefined
+      ? [
+          {
+            count: preview.coursesMerged,
+            text: plural(preview.coursesMerged, "course") + " merged",
+          },
+        ]
+      : []),
+    {
+      count: preview.itemsDeleted,
+      text: `${plural(preview.itemsDeleted, singular)} deleted`,
+    },
+  ];
+  return lines.filter((l) => l.count > 0);
+}
+
 function MergeModal({
   config,
   row,
@@ -357,6 +392,22 @@ function MergeModal({
     .filter((r) => r.id !== row.id)
     .map((r) => ({ value: String(r.id), label: r.name }));
 
+  const target = targetOptions.find((o) => o.value === targetId);
+
+  // Dry-run as soon as a target is picked so the admin sees the impact
+  // before committing.
+  const previewQuery = useQuery({
+    queryKey: ["admin", config.resource, "merge-preview", row.id, targetId],
+    queryFn: () =>
+      config.api.merge({
+        keepId: Number(targetId),
+        mergeIds: [row.id],
+        dryRun: true,
+      }),
+    enabled: !!targetId,
+  });
+  const preview = previewQuery.data?.preview;
+
   const merge = useMutation({
     mutationFn: () =>
       config.api.merge({
@@ -366,6 +417,8 @@ function MergeModal({
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", config.resource] });
+      // Merged taxonomy entries also disappear from the public filters.
+      queryClient.invalidateQueries({ queryKey: ["filter-options"] });
       onClose();
     },
   });
@@ -375,7 +428,7 @@ function MergeModal({
       open
       onClose={onClose}
       title={`Merge ${config.singular}`}
-      description={`"${row.name}" will be merged into the ${config.singular} you pick, then removed. Its questions and submissions move over.`}
+      description={`Questions and submissions move to the ${config.singular} you keep. This cannot be undone.`}
       footer={
         <>
           <Button variant="secondary" onClick={onClose}>
@@ -384,26 +437,77 @@ function MergeModal({
           <Button
             variant="danger"
             loading={merge.isPending}
-            disabled={!targetId}
+            disabled={!targetId || previewQuery.isError}
             onClick={() => merge.mutate()}
           >
-            Merge
+            {target ? `Merge into “${target.label}”` : "Merge"}
           </Button>
         </>
       }
     >
-      <div>
-        <span className={labelClass}>Keep this {config.singular}</span>
-        <SearchableSelect
-          id="merge-target"
-          label={`Target ${config.singular}`}
-          options={targetOptions}
-          value={targetId}
-          onChange={setTargetId}
-          placeholder="Select target…"
-        />
+      <div className="space-y-4">
+        <div>
+          <span className={labelClass}>Remove</span>
+          <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-800 line-through decoration-red-400/60 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">
+            {row.name}
+          </p>
+        </div>
+
+        <div>
+          <span className={labelClass}>Merge into</span>
+          <SearchableSelect
+            id="merge-target"
+            label={`Target ${config.singular}`}
+            options={targetOptions}
+            value={targetId}
+            onChange={setTargetId}
+            placeholder={`Pick the ${config.singular} to keep…`}
+          />
+        </div>
+
+        {targetId && (
+          <div className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 dark:border-gray-800 dark:bg-gray-950">
+            <p className={labelClass}>What will happen</p>
+            {previewQuery.isPending ? (
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Checking impact…
+              </p>
+            ) : previewQuery.isError ? (
+              <p className="text-sm text-red-600 dark:text-red-400">
+                Could not preview this merge:{" "}
+                {(previewQuery.error as Error).message}
+              </p>
+            ) : preview ? (
+              (() => {
+                const lines = mergeImpactLines(preview, config.singular);
+                return lines.length === 0 ? (
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    Nothing references “{row.name}” — it will simply be
+                    removed.
+                  </p>
+                ) : (
+                  <ul className="space-y-1 text-sm text-gray-700 dark:text-gray-200">
+                    {lines.map((line) => (
+                      <li key={line.text} className="flex items-baseline gap-2">
+                        <span className="font-semibold tabular-nums">
+                          {line.count.toLocaleString()}
+                        </span>
+                        {line.text}
+                      </li>
+                    ))}
+                  </ul>
+                );
+              })()
+            ) : (
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                No preview available.
+              </p>
+            )}
+          </div>
+        )}
+
         {merge.isError && (
-          <p className="mt-2 text-xs text-red-600 dark:text-red-400">
+          <p className="text-xs text-red-600 dark:text-red-400">
             {(merge.error as Error).message}
           </p>
         )}

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth";
+import { cx } from "../lib/cx";
 
 export function UserMenu() {
   const { user, logout } = useAuth();
@@ -35,10 +36,15 @@ export function UserMenu() {
         onClick={() => setOpen((o) => !o)}
         aria-haspopup="menu"
         aria-expanded={open}
-        className="flex items-center gap-2 rounded-full border border-gray-200 py-1 pl-1 pr-3 text-sm font-medium transition hover:bg-gray-100 dark:border-gray-800 dark:hover:bg-gray-800"
+        aria-label={`Account menu for ${user.name}`}
+        className={cx(
+          "flex rounded-full ring-2 ring-offset-2 ring-offset-white transition dark:ring-offset-gray-950",
+          open
+            ? "ring-blue-500"
+            : "ring-transparent hover:ring-gray-300 dark:hover:ring-gray-700"
+        )}
       >
         <Avatar name={user.name} image={user.image} />
-        <span className="hidden max-w-[10ch] truncate sm:inline">{user.name}</span>
       </button>
 
       {open && (
@@ -85,10 +91,10 @@ export function UserMenu() {
 
 function Avatar({ name, image }: { name: string; image: string | null }) {
   if (image) {
-    return <img src={image} alt="" className="h-7 w-7 rounded-full object-cover" />;
+    return <img src={image} alt="" className="h-8 w-8 rounded-full object-cover" />;
   }
   return (
-    <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 text-xs font-bold text-white">
+    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 text-xs font-bold text-white">
       {name[0]?.toUpperCase() ?? "?"}
     </div>
   );
