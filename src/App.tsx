@@ -53,6 +53,8 @@ const navLinks: NavLinkItem[] = [
   { label: "Home", to: "/" },
   { label: "Questions", to: "/questions" },
   { label: "Contributors", to: "/contributors" },
+  // Guests are bounced to /login by RequireAuth and returned here after.
+  { label: "Upload", to: "/submissions/manual/new" },
 ];
 
 const linkClass = ({ isActive }: NavLinkRenderProps) =>
@@ -104,15 +106,7 @@ function Navbar() {
           ))}
           <ThemeToggle />
           {user ? (
-            <>
-              <Link
-                to="/submissions/manual"
-                className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700 active:scale-[0.98]"
-              >
-                Submit
-              </Link>
-              <UserMenu />
-            </>
+            <UserMenu />
           ) : (
             <Link
               to="/login"
@@ -140,13 +134,6 @@ function Navbar() {
               <NavLink to="/profile" onClick={close} className={linkClass}>
                 <span className="block py-2">Your profile</span>
               </NavLink>
-              <Link
-                to="/submissions/manual/new"
-                onClick={close}
-                className="mt-2 rounded-lg bg-blue-600 px-4 py-2.5 text-center text-sm font-semibold text-white transition hover:bg-blue-700 active:scale-[0.98]"
-              >
-                New submission
-              </Link>
             </>
           ) : (
             <Link

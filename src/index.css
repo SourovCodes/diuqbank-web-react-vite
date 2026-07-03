@@ -63,15 +63,15 @@ html.dark {
   }
 }
 
-/* PDF viewer: fill the viewport below the sticky navbar (4rem) plus a little
-   breathing room, so the document reads nearly full-screen once scrolled to. */
+/* PDF viewer: fill most of the viewport below the sticky navbar (4rem),
+   so the document reads nearly full-screen once scrolled to. */
 .pdf-frame {
-  height: calc(100vh - 6rem);
-  min-height: 600px;
+  height: calc(100vh - 10rem);
+  min-height: 540px;
 }
 
 @supports (height: 100dvh) {
   .pdf-frame {
-    height: calc(100dvh - 6rem);
+    height: calc(100dvh - 10rem);
   }
 }
